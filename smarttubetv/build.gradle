@@ -172,6 +172,9 @@ android {
             minSdkVersion 21
             targetSdkVersion project.properties.compileSdkVersion
         }
+        // NOTE: the 'stdroid' flavor (a phone repackaging of the TV UI) was superseded by
+        // the :smarttubedroid module, which owns the com.smarttube.droid application id.
+        // Its sources are archived under backup/smarttubetv-stdroid-flavor/.
     }
 }
 
