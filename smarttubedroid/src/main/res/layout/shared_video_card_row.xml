@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Small card for horizontal rows: 160dp wide, 16:9 thumbnail, badges, progress, two text lines.
+     Root is a FrameLayout so the touch ripple (foreground) works on all supported API levels. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/shared_card_thumbnail"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shared_card_placeholder"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="H,16:9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Duration / LIVE / SHORTS badge, bottom-right of the thumbnail -->
+        <TextView
+            android:id="@+id/shared_card_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/shared_badge_bg"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:paddingLeft="4dp"
+            android:paddingTop="1dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="1dp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/shared_card_thumbnail"
+            app:layout_constraintEnd_toEndOf="@id/shared_card_thumbnail"
+            tools:text="12:34"
+            tools:visibility="visible" />
+
+        <!-- NEW content dot, top-right of the thumbnail -->
+        <View
+            android:id="@+id/shared_card_new_dot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/shared_new_dot"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/shared_card_thumbnail"
+            app:layout_constraintTop_toTopOf="@id/shared_card_thumbnail" />
+
+        <!-- Thin watch-progress bar pinned to the thumbnail bottom -->
+        <ProgressBar
+            android:id="@+id/shared_card_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:max="100"
+            android:progressDrawable="@drawable/shared_card_progress"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/shared_card_thumbnail"
+            app:layout_constraintEnd_toEndOf="@id/shared_card_thumbnail"
+            app:layout_constraintStart_toStartOf="@id/shared_card_thumbnail" />
+
+        <TextView
+            android:id="@+id/shared_card_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="4dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/shared_card_thumbnail" />
+
+        <TextView
+            android:id="@+id/shared_card_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/shared_card_title" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TYPE_LONG_TEXT: one big non-clickable block. Scrolling is done by the host RecyclerView. -->
+<com.google.android.material.textview.MaterialTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_row_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="16dp"
+    android:lineSpacingMultiplier="1.15"
+    android:textAppearance="?attr/textAppearanceBody2"
+    android:textIsSelectable="true" />

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Channel screens only. User-facing text reuses common's translated strings
+         (action_search, search_sorting, nothing_found) wherever one exists. -->
+    <string name="channel_search_in_channel">Search in channel</string>
+    <string name="channel_navigate_back">Back</string>
+</resources>

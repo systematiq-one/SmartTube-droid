@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Playback screen colors (playback_ prefix per module resource-naming contract) -->
+<resources>
+    <!-- Accent for toggled-ON player buttons (matches app brand red) -->
+    <color name="playback_accent">#FFFF0000</color>
+    <!-- Default player control tint -->
+    <color name="playback_control">#FFFFFFFF</color>
+    <!-- Secondary/dimmed control + text tint -->
+    <color name="playback_control_dim">#B3FFFFFF</color>
+    <!-- Controls overlay scrim -->
+    <color name="playback_scrim">#99000000</color>
+    <!-- Portrait metadata panel background -->
+    <color name="playback_panel_bg">#FF0F0F0F</color>
+    <!-- Thin divider inside the portrait panel -->
+    <color name="playback_divider">#22FFFFFF</color>
+    <!-- Unplayed part of the seek bar -->
+    <color name="playback_seek_track">#4DFFFFFF</color>
+    <!-- Buffered part of the seek bar -->
+    <color name="playback_seek_buffer">#80FFFFFF</color>
+</resources>

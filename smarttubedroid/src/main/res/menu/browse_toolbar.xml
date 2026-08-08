@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Titles reuse common's translated strings (action_search, dialog_account_list, refresh_section) -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/browse_action_search"
+        android:icon="@drawable/browse_ic_search"
+        android:title="@string/action_search"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/browse_action_account"
+        android:icon="@drawable/browse_ic_account"
+        android:title="@string/dialog_account_list"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/browse_action_refresh"
+        android:icon="@drawable/browse_ic_refresh"
+        android:title="@string/refresh_section"
+        app:showAsAction="never" />
+
+</menu>

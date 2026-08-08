@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.liskovsoft.smartyoutubetv2.droid">
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- tools:node="replace" is required: library manifests pulled in via :common declare
+         leanback as required=true, and the merger resolves conflicts in favour of true,
+         which would mark this phone app as a TV-only app. -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false"
+        tools:node="replace" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false"
+        tools:node="replace" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false"
+        tools:node="replace" />
+
+    <uses-sdk tools:overrideLibrary="
+        com.google.android.exoplayer2.ext.vp9,
+        com.google.android.exoplayer2.testutil,
+        com.google.android.exoplayer2.ext.okhttp" />
+
+    <application
+        android:name="com.liskovsoft.smartyoutubetv2.droid.DroidApplication"
+        android:usesCleartextTraffic="true"
+        android:allowBackup="true"
+        android:allowAudioPlaybackCapture="true"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:icon="@mipmap/app_icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.SmartTubeDroid"
+        tools:node="merge"
+        tools:replace="android:theme,android:allowBackup"
+        tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.splash.SplashActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.SmartTubeDroid.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Process intents from other apps -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="youtube.com" />
+                <data android:host="www.youtube.com" />
+                <data android:host="m.youtube.com" />
+                <data android:host="youtu.be" />
+                <data android:pathPattern=".*" />
+                <data android:host="search" android:scheme="youtube" />
+                <data android:host="play" android:scheme="youtube" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="vnd.youtube" />
+                <data android:scheme="vnd.youtube.launch" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.browse.BrowseActivity"
+            android:launchMode="singleTask"
+            android:exported="false" />
+
+        <!-- Rotation must NOT recreate the player (video keeps playing) -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.playback.PlaybackActivity"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|layoutDirection"
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true"
+            android:showWhenLocked="true"
+            android:theme="@style/Theme.SmartTubeDroid.Player" />
+
+        <!-- configChanges: the presenter drops its pending categories once consumed, so a
+             recreate on rotation would close the open dialog instead of restoring it -->
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.dialogs.AppDialogActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|layoutDirection"
+            android:theme="@style/Theme.SmartTubeDroid.Dialog" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.search.SearchActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.channel.ChannelActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.channeluploads.ChannelUploadsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.signin.SignInActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.adddevice.AddDeviceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.webbrowser.WebBrowserActivity"
+            android:exported="false" />
+
+        <!-- Android TV home-screen channels and global TV search, merged in from the
+             :leanbackassistant library that :common still depends on. Meaningless on a
+             phone: strip them from the merged manifest. -->
+        <activity
+            android:name="com.liskovsoft.leanbackassistant.search.SearchableActivity"
+            tools:node="remove" />
+        <receiver
+            android:name="com.liskovsoft.leanbackassistant.channels.UpdateChannelsReceiver"
+            tools:node="remove" />
+        <provider
+            android:name="com.liskovsoft.leanbackassistant.search.VideoContentProvider"
+            android:authorities="${applicationId}.leanbackassistant"
+            tools:node="remove" />
+    </application>
+
+</manifest>

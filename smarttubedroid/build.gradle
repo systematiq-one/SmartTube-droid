@@ -1,0 +1,129 @@
+apply from: gradle.ext.sharedModulesConstants
+
+apply plugin: 'com.android.application'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion project.properties.compileSdkVersion
+    buildToolsVersion project.properties.buildToolsVersion
+    ndkVersion "21.0.6113669"
+
+    defaultConfig {
+        applicationId "com.smarttube.droid"
+        minSdkVersion 21
+        targetSdkVersion project.properties.compileSdkVersion
+        versionCode 1
+        versionName "0.1.0"
+        multiDexEnabled = true
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
+
+        // Library modules (common, youtubeapi, sharedutils...) declare stbeta/ststable/stfdroid
+        // flavors; this app has none, so consume their stable variant
+        missingDimensionStrategy 'default', 'ststable'
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86'
+            universalApk true
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def project = "SmartTubeDroid"
+            def buildType = variant.buildType.name.take(1)
+            def version = variant.versionName
+            def arch = output.getFilter(com.android.build.OutputFile.ABI)
+            arch = arch != null ? arch : "universal"
+
+            def newApkName = sprintf("%s_%s_%s_%s.apk", [project, version, buildType, arch])
+
+            output.outputFileName = new File(newApkName)
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':common')
+    implementation project(':sharedutils')
+    implementation project(':mediaserviceinterfaces')
+    implementation project(':youtubeapi')
+
+    // Stock androidx.fragment is excluded globally in the root build.gradle;
+    // this patched local copy MUST be present or fragments vanish at runtime
+    implementation project(':fragment-1.1.0')
+
+    //////// EXOPLAYER (patched 2.10.6 fork — common's engine is bound to it) /////////
+    implementation project(':exoplayer-library-core')
+    implementation project(':exoplayer-library-ui')
+    implementation project(':exoplayer-extension-mediasession')
+
+    // Touch gesture layer: YouTube-style double-tap seek overlay
+    implementation project(':doubletapplayerview')
+
+    implementation 'androidx.annotation:annotation:' + annotationXVersion
+    implementation 'androidx.recyclerview:recyclerview:' + recyclerviewXVersion
+    implementation 'androidx.constraintlayout:constraintlayout:' + constraintLayoutXVersion
+    implementation 'androidx.media:media:' + mediaXVersion
+    implementation 'androidx.multidex:multidex:' + multiDexVersion
+    implementation 'com.google.android.material:material:' + materialVersion
+
+    implementation 'com.github.bumptech.glide:glide:' + glideVersion
+    implementation 'com.github.bumptech.glide:annotations:' + glideVersion
+    annotationProcessor 'com.github.bumptech.glide:compiler:' + glideVersion
+
+    implementation 'io.reactivex.rxjava2:rxandroid:' + rxAndroidVersion
+    implementation 'io.reactivex.rxjava2:rxjava:' + rxJavaVersion
+
+    // ByeByeDPI fix (parity with TV app)
+    implementation 'org.conscrypt:conscrypt-android:' + conscryptVersion
+}

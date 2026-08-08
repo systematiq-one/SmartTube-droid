@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Playback screen strings. User-facing text reuses common's translated strings
+     (action_like, action_next, share_link, ...) wherever one exists; only labels
+     with no common equivalent live here. -->
+<resources>
+    <string name="playback_quality">Quality</string>
+    <string name="playback_fullscreen">Toggle fullscreen</string>
+    <string name="playback_rotate">Rotate</string>
+    <string name="playback_speed_boost">2×</string>
+    <string name="playback_next_format">Next: %1$s</string>
+    <string name="playback_volume">Volume</string>
+    <string name="playback_brightness">Brightness</string>
+    <string name="playback_back">Back</string>
+    <string name="playback_more">More options</string>
+    <string name="playback_time_zero">0:00</string>
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom-anchored "sheet" over a dim scrim. Plain owned views (NOT BottomSheetDialogFragment):
+     the AppDialogView contract needs an internal stack of screens, which is far easier to drive
+     when this fragment owns the views. The sheet is a wrap_content child of a match_parent
+     FrameLayout, so it is measured with AT_MOST(parent height - topMargin): tall content simply
+     makes the RecyclerView scroll instead of overflowing the screen. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Tap to dismiss. Color is set at runtime (transparent/overlay dialogs dim less or not at all) -->
+    <View
+        android:id="@+id/dialog_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3000000"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <LinearLayout
+        android:id="@+id/dialog_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="56dp"
+        android:background="@drawable/dialog_sheet_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="16dp"
+        android:minHeight="96dp"
+        android:orientation="vertical"
+        android:paddingBottom="8dp"
+        android:visibility="invisible">
+
+        <View
+            android:id="@+id/dialog_handle"
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/dialog_handle" />
+
+        <!-- Titles are CharSequence Spannables coming straight from the presenters: set as-is -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dialog_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:overScrollMode="ifContentScrolls"
+            android:scrollbars="vertical" />
+
+    </LinearLayout>
+
+</FrameLayout>

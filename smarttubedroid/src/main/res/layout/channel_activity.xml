@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
+
+    <!-- App bar: back arrow + channel title + search + sort.
+         Manual bar (no setSupportActionBar): base activity is a FragmentActivity,
+         not AppCompatActivity, so appcompat menu plumbing is avoided on purpose. -->
+    <LinearLayout
+        android:id="@+id/channel_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:elevation="4dp"
+        android:background="?attr/colorSurface">
+
+        <ImageButton
+            android:id="@+id/channel_back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/channel_ic_back"
+            android:tint="?attr/colorOnSurface"
+            android:scaleType="center"
+            android:contentDescription="@string/channel_navigate_back" />
+
+        <TextView
+            android:id="@+id/channel_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="?attr/colorOnSurface"
+            android:maxLines="1"
+            android:ellipsize="end"
+            tools:text="Channel title" />
+
+        <ImageButton
+            android:id="@+id/channel_search_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/channel_ic_search"
+            android:tint="?attr/colorOnSurface"
+            android:scaleType="center"
+            android:contentDescription="@string/action_search" />
+
+        <ImageButton
+            android:id="@+id/channel_sort_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/channel_ic_sort"
+            android:tint="?attr/colorOnSurface"
+            android:scaleType="center"
+            android:contentDescription="@string/search_sorting" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Vertical list of titled rows (shared VideoRowsAdapter) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/channel_rows_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:scrollbars="vertical" />
+
+        <ProgressBar
+            android:id="@+id/channel_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

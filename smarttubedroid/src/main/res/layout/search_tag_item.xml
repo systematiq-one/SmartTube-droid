@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_tag_text"
+    android:layout_width="wrap_content"
+    android:layout_height="32dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginRight="8dp"
+    android:background="@drawable/search_tag_bg"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:maxLines="1"
+    android:paddingStart="14dp"
+    android:paddingLeft="14dp"
+    android:paddingEnd="14dp"
+    android:paddingRight="14dp"
+    android:textColor="?android:attr/textColorPrimary"
+    android:textSize="14sp" />

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Universal dialog/settings renderer only. Everything user-facing that already exists in
+         common (category titles, option titles, require_checked...) comes from the presenters
+         as CharSequence, so this file stays tiny on purpose. -->
+
+    <!-- TYPE_CHAT / TYPE_COMMENTS placeholder: the TV UI renders those with the chatkit module;
+         the touch UI gets dedicated screens later. -->
+    <string name="dialog_not_supported">Not supported yet</string>
+</resources>

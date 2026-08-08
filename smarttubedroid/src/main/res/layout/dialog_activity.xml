@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Host container of AppDialogFragment (the real AppDialogView implementation).
+     The activity window is translucent: the fragment paints its own scrim + sheet. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

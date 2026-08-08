@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings owned by the browse screen. All user-facing browse text currently reuses
+     common's already-translated strings (action_search, dialog_account_list,
+     refresh_section, ...); add browse_-prefixed entries here when no common string fits. -->
+<resources />

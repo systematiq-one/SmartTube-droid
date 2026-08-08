@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- User-facing text reuses common's translated strings (action_search etc.);
+         only accessibility/labels with no common counterpart live here -->
+    <string name="search_back_desc">Back</string>
+    <string name="search_clear_desc">Clear search text</string>
+    <string name="search_voice_desc">Voice search</string>
+    <string name="search_filters_desc">Search filters</string>
+    <string name="search_voice_unavailable">Voice recognition is not available on this device</string>
+</resources>
