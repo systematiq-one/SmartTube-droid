@@ -1,8 +1,11 @@
-name: Build Debug APK
+name: Build Debug APK (TV app)
 
+# Inherited from upstream: builds nightly APKs of the TV app (smarttubetv),
+# which this fork does not ship. The automatic trigger is removed so it stops
+# running on every push; it can still be started by hand from the Actions tab
+# if the TV app ever needs checking. Releases of the phone app are built by
+# release.yml instead.
 on:
-  push:
-    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
