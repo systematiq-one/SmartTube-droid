@@ -17,6 +17,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.SignInView;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 
 /**
  * Touch implementation of the device-code sign-in screen.<br/>
@@ -28,6 +29,7 @@ public class SignInActivity extends DroidActivity implements SignInView {
     private SignInPresenter mSignInPresenter;
     private TextView mCodeText;
     private TextView mDescriptionText;
+    private TextView mWaitingText;
     private MaterialButton mOpenBrowserButton;
     private String mFullSignInUrl;
 
@@ -40,6 +42,7 @@ public class SignInActivity extends DroidActivity implements SignInView {
         mCodeText = findViewById(R.id.signin_code_text);
         mDescriptionText = findViewById(R.id.signin_description_text);
         mOpenBrowserButton = findViewById(R.id.signin_open_browser_button);
+        mWaitingText = findViewById(R.id.signin_waiting_text);
         MaterialButton cancelButton = findViewById(R.id.signin_cancel_button);
 
         // Same initial description as TV's SignInFragment guidance (empty url placeholder)
@@ -58,7 +61,25 @@ public class SignInActivity extends DroidActivity implements SignInView {
     protected void onResume() {
         super.onResume();
 
+        // Coming back from the browser: the activation page cannot send the user back here, so
+        // check whether the sign-in already went through while this screen was in the background.
+        // The presenter polls every few seconds and closes us itself, but the process can be
+        // frozen while backgrounded, which would leave a stale code on screen.
+        if (isSignedIn()) {
+            finish();
+            return;
+        }
+
         mSignInPresenter.onViewResumed();
+    }
+
+    private boolean isSignedIn() {
+        try {
+            return YouTubeServiceManager.instance().getSignInService().isSigned();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -109,6 +130,11 @@ public class SignInActivity extends DroidActivity implements SignInView {
     private void openInBrowser() {
         if (TextUtils.isEmpty(mFullSignInUrl)) {
             return;
+        }
+
+        // Nothing sends the user back here afterwards, so say what happens next
+        if (mWaitingText != null) {
+            mWaitingText.setVisibility(android.view.View.VISIBLE);
         }
 
         try {

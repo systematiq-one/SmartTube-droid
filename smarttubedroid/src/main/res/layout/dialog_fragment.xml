@@ -17,7 +17,9 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <LinearLayout
+    <!-- Custom layout so a downward drag anywhere on the sheet can dismiss it, even when the
+         touch lands on the scrolling list -->
+    <com.liskovsoft.smartyoutubetv2.droid.ui.dialogs.DialogSheetLayout
         android:id="@+id/dialog_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,6 +64,6 @@
             android:overScrollMode="ifContentScrolls"
             android:scrollbars="vertical" />
 
-    </LinearLayout>
+    </com.liskovsoft.smartyoutubetv2.droid.ui.dialogs.DialogSheetLayout>
 
 </FrameLayout>

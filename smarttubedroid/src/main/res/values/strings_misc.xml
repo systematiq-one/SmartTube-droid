@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Strings owned by the misc agent (signin / adddevice / webbrowser screens).
-
-     Currently empty on purpose: every user-facing text on these screens reuses common's
-     already-translated strings (merged into this module's R):
-       - signin_view_title, signin_view_description, signin_view_action_text
-       - login_from_browser, cancel_dialog
-       - dialog_add_device, add_device_view_description
-     Add new strings here (prefixed misc_/signin_) only when no common string fits. -->
-<resources />
+<!-- Sign-in / device pairing / browser screens. User-facing text reuses common's translated
+     strings wherever one exists (signin_view_title, login_from_browser, cancel_dialog...);
+     only text with no equivalent there lives here. -->
+<resources>
+    <string name="signin_waiting">Waiting for confirmation… once you have entered the code, just come back to this app.</string>
+</resources>

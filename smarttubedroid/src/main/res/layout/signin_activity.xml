@@ -57,6 +57,20 @@
                     android:enabled="false"
                     android:text="@string/login_from_browser" />
 
+                <!-- Shown after the browser is opened: the activation page has no way to bring
+                     the user back, so explain that returning here is enough -->
+                <TextView
+                    android:id="@+id/signin_waiting_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:textStyle="italic"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:text="@string/signin_waiting"
+                    android:visibility="gone" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/signin_cancel_button"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"

@@ -60,7 +60,7 @@ public class AppDialogFragment extends Fragment implements AppDialogView, AppDia
     private AppDialogPresenter mPresenter;
     private AppDialogAdapter mAdapter;
     private View mScrim;
-    private LinearLayout mSheet;
+    private DialogSheetLayout mSheet;
     private TextView mTitleView;
     private RecyclerView mRecyclerView;
     private boolean mIsTransparent;
@@ -104,10 +104,28 @@ public class AppDialogFragment extends Fragment implements AppDialogView, AppDia
         mTitleView = view.findViewById(R.id.dialog_title);
         mRecyclerView = view.findViewById(R.id.dialog_list);
 
-        // Like a real bottom sheet: tap outside to dismiss the whole dialog
+        // Like a real bottom sheet: tap outside to dismiss the whole dialog, whatever the depth
         mScrim.setOnClickListener(v -> finish());
-        // Swallow taps so they don't reach the scrim
-        mSheet.setOnClickListener(v -> { });
+
+        // Swipe the sheet down to step back one screen (or close it at the root). Handy on a
+        // phone, where deep option screens would otherwise need the system back gesture.
+        mSheet.setListener(new DialogSheetLayout.Listener() {
+            @Override
+            public void onDragDismiss() {
+                goBack();
+            }
+
+            @Override
+            public boolean canDragToDismiss(float x, float y) {
+                // Anywhere above the list always drags; over the list only when it is scrolled
+                // to the top, so a half-scrolled list keeps scrolling normally.
+                if (mRecyclerView == null) {
+                    return true;
+                }
+
+                return y < mRecyclerView.getTop() || !mRecyclerView.canScrollVertically(-1);
+            }
+        });
 
         mAdapter = new AppDialogAdapter(getActivity(), this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -345,7 +363,11 @@ public class AppDialogFragment extends Fragment implements AppDialogView, AppDia
                 for (int i = 0; i < options.size(); i++) {
                     OptionItem option = options.get(i);
                     items.add(AppDialogAdapter.Item.radio(option));
-                    if (radioSelection == RecyclerView.NO_POSITION && option.isSelected()) {
+                    // Take the LAST selected entry, not the first: some radio lists mark more
+                    // than one option selected (the account list hardcodes its "none" entry to
+                    // true and then marks the real account as well). TV's ListPreference keeps
+                    // the last value written, so matching that shows the account, not "none".
+                    if (option.isSelected()) {
                         radioSelection = i;
                     }
                 }
@@ -435,6 +457,11 @@ public class AppDialogFragment extends Fragment implements AppDialogView, AppDia
 
         if (mRecyclerView != null) {
             mRecyclerView.scrollToPosition(screen.radioSelection > 0 ? screen.radioSelection : 0);
+        }
+
+        // A previous screen may have been left mid-drag; the new one must sit flush again
+        if (mSheet != null) {
+            mSheet.resetDrag();
         }
     }
 
