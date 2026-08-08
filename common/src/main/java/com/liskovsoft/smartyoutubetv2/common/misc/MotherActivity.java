@@ -42,6 +42,8 @@ public class MotherActivity extends FragmentActivity {
     private static final float DEFAULT_DENSITY = 2.0f; // xhdpi
     private static final float DEFAULT_WIDTH = 1920f; // xhdpi
     private static DisplayMetrics sCachedDisplayMetrics;
+    // Touch (phone) UI uses real device metrics; TV UI emulates a fixed 960dp-wide screen
+    private static boolean sTvDpiScalingEnabled = true;
     protected static boolean sIsInPipMode;
     private ScreensaverManager mScreensaverManager;
     // Make static in case Don't keep activities enabled in Developer settings
@@ -238,7 +240,19 @@ public class MotherActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * Call from Application.onCreate() before any activity starts.
+     * Disabling keeps the device's real display metrics (phone/touch UI).
+     */
+    public static void setTvDpiScalingEnabled(boolean enabled) {
+        sTvDpiScalingEnabled = enabled;
+    }
+
     private void initDpi() {
+        if (!sTvDpiScalingEnabled) {
+            return;
+        }
+
         getResources().getDisplayMetrics().setTo(getDisplayMetrics(this));
     }
 
