@@ -73,3 +73,10 @@ hs_err_pid*.log
 
 # SmartTube Droid: archived TV-only code kept for reference, never tracked
 /backup/
+
+# Signing secrets. The keystore itself lives outside the repo; these patterns are
+# a second line of defence so a stray copy can never be committed.
+keystore.properties
+*.keystore
+*.jks
+*.base64.txt

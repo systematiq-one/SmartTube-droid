@@ -22,8 +22,9 @@ android {
         applicationId "com.smarttube.droid"
         minSdkVersion 21
         targetSdkVersion project.properties.compileSdkVersion
-        versionCode 1
-        versionName "0.1.0"
+        // CI overrides these from the git tag: -PappVersionName=0.2.0 -PappVersionCode=7
+        versionCode project.hasProperty('appVersionCode') ? project.property('appVersionCode').toInteger() : 1
+        versionName project.hasProperty('appVersionName') ? project.property('appVersionName') : "0.1.0"
         multiDexEnabled = true
         buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
 
