@@ -21,7 +21,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.errors.ErrorFragmentData;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.BrowsePresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter;
-import com.liskovsoft.smartyoutubetv2.common.app.presenters.dialogs.AccountSelectionPresenter;
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.settings.AccountSettingsPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.BrowseView;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
@@ -150,7 +150,10 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
             SearchPresenter.instance(this).startSearch(null);
             return true;
         } else if (itemId == R.id.browse_action_account) {
-            AccountSelectionPresenter.instance(this).show(true);
+            // Full accounts screen, not the bare chooser: this one carries the "Add account"
+            // entry that starts the Google sign-in flow. The chooser alone is a dead end
+            // while no account exists yet.
+            AccountSettingsPresenter.instance(this).show();
             return true;
         } else if (itemId == R.id.browse_action_refresh) {
             mBrowsePresenter.refresh();

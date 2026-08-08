@@ -10,6 +10,8 @@
     <string name="playback_next_format">Next: %1$s</string>
     <string name="playback_volume">Volume</string>
     <string name="playback_brightness">Brightness</string>
+    <string name="playback_zoom_fill">Fill screen</string>
+    <string name="playback_zoom_fit">Fit screen</string>
     <string name="playback_back">Back</string>
     <string name="playback_more">More options</string>
     <string name="playback_time_zero">0:00</string>

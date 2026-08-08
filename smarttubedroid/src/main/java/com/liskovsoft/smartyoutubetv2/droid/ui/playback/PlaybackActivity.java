@@ -32,6 +32,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -58,6 +59,7 @@ import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerConstants;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.ChatReceiver;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.SeekBarSegment;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
@@ -101,6 +103,11 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private static final long PROGRESS_UPDATE_MS = 500;
     private static final int SEEK_BAR_MAX = 1_000;
     private static final float SPEED_BOOST = 2f;
+    /** A full-width horizontal swipe scrubs this share of the video... */
+    private static final float SEEK_SWIPE_FRACTION = 0.5f;
+    /** ...but never more than this, so long videos stay controllable. */
+    private static final long MAX_SEEK_SWIPE_MS = 10 * 60 * 1_000L;
+    private static final long INDICATOR_HIDE_DELAY_MS = 900;
 
     // Button ids of common's vocabulary. The two lb_control_* ids live in leanback-1.0.0 and
     // reach common's R transitively (see report result13.md, correction C1).
@@ -193,6 +200,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private float mSavedSpeed = 1f;
     private boolean mSpeedBoosted;
     private float mDragVolume = -1;
+    /** Position the current horizontal scrub started from; -1 when no scrub is in progress. */
+    private long mSeekAnchorMs = -1;
+    private long mSeekTargetMs;
+    private final Runnable mHideIndicator = this::hideIndicator;
 
     // ------------------------------------------------------------- lifecycle
 
@@ -1052,8 +1063,75 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     }
 
     @Override
+    public void onSeekStart() {
+        mSeekAnchorMs = getPositionMs();
+        mSeekTargetMs = mSeekAnchorMs;
+        // Stop the periodic updater from overwriting the preview position
+        mIsScrubbing = true;
+    }
+
+    @Override
+    public void onSeekDelta(float totalDelta) {
+        long durationMs = getDurationMs();
+
+        if (durationMs <= 0 || mSeekAnchorMs < 0) {
+            return;
+        }
+
+        // A full-width swipe covers SEEK_SWIPE_FRACTION of the video, capped so that very long
+        // videos stay controllable and very short ones don't jump wildly
+        long spanMs = Math.min((long) (durationMs * SEEK_SWIPE_FRACTION), MAX_SEEK_SWIPE_MS);
+        mSeekTargetMs = clampLong(mSeekAnchorMs + (long) (totalDelta * spanMs), 0, durationMs);
+
+        long diffMs = mSeekTargetMs - mSeekAnchorMs;
+        String label = String.format(Locale.US, "%s  [%s%s]",
+                formatTime(mSeekTargetMs), diffMs >= 0 ? "+" : "-", formatTime(Math.abs(diffMs)));
+
+        showIndicator(diffMs >= 0 ? R.drawable.playback_ic_next : R.drawable.playback_ic_prev, label);
+
+        // Move the scrubber and the clock along so the controls agree with the preview
+        if (mSeekBar != null) {
+            mSeekBar.setProgress((int) (mSeekTargetMs * SEEK_BAR_MAX / durationMs));
+        }
+
+        if (mPositionLabel != null) {
+            mPositionLabel.setText(formatTime(mSeekTargetMs));
+        }
+    }
+
+    /**
+     * Pinch out fills the screen (crops the sides/top of the frame), pinch in fits the whole
+     * frame inside the screen. Persisted through PlayerData like the TV zoom setting, so the
+     * choice survives to the next video.
+     */
+    @Override
+    public void onZoomChanged(boolean fillScreen) {
+        int mode = fillScreen ? PlayerConstants.RESIZE_MODE_FIT_BOTH : PlayerConstants.RESIZE_MODE_DEFAULT;
+
+        setResizeMode(mode);
+        getPlayerData().setResizeMode(mode);
+
+        showIndicator(fillScreen ? R.drawable.playback_ic_fullscreen : R.drawable.playback_ic_fullscreen_exit,
+                getString(fillScreen ? R.string.playback_zoom_fill : R.string.playback_zoom_fit));
+
+        mHandler.removeCallbacks(mHideIndicator);
+        mHandler.postDelayed(mHideIndicator, INDICATOR_HIDE_DELAY_MS);
+    }
+
+    @Override
     public void onDragEnd() {
         mDragVolume = -1;
+
+        // Commit the scrub only now: seeking on every touch move stutters playback
+        if (mSeekAnchorMs >= 0) {
+            if (mSeekTargetMs != mSeekAnchorMs) {
+                setPositionMs(mSeekTargetMs);
+            }
+
+            mSeekAnchorMs = -1;
+            mIsScrubbing = false;
+        }
+
         hideIndicator();
     }
 
@@ -1128,6 +1206,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         return Math.round(value * 100) + "%";
     }
 
+    private static long clampLong(long value, long min, long max) {
+        return value < min ? min : (value > max ? max : value);
+    }
+
     private static float clamp(float value, float min, float max) {
         if (value < min) {
             return min;
@@ -1156,12 +1238,15 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     // ------------------------------------------------- PlayerView (engine)
 
     /**
-     * Quality label produced by the engine (e.g. "1080p 60fps avc"). Shown on the quality chip.
+     * Quality label produced by the engine (e.g. "1080p 60fps avc"). The chips are icon-only,
+     * so it becomes the chip's tooltip/description rather than a visible label.
      */
     @Override
     public void setQualityInfo(String info) {
         if (mQualityChip != null) {
-            mQualityChip.setText(TextUtils.isEmpty(info) ? getString(R.string.playback_quality) : info);
+            CharSequence label = TextUtils.isEmpty(info) ? getString(R.string.playback_quality) : info;
+            mQualityChip.setContentDescription(label);
+            TooltipCompat.setTooltipText(mQualityChip, label);
         }
     }
 
