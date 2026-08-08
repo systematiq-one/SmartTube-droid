@@ -48,6 +48,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # The build pins exact versions; runners carry different ones preinstalled.
+      # The NDK is only used to strip debug symbols from bundled .so files, but
+      # without it the APKs come out noticeably larger.
+      - name: Install the pinned SDK packages
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-34" "build-tools;30.0.3" "ndk;21.0.6113669"
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
