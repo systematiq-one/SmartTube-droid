@@ -307,6 +307,25 @@
                     app:iconTint="@color/playback_control" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/playback_chip_playlist"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                    android:layout_width="48dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:contentDescription="@string/action_playlist_add"
+                    app:icon="@drawable/playback_ic_bookmark"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    app:iconTint="@color/playback_control" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_more"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="48dp"

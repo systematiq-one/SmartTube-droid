@@ -71,23 +71,24 @@
             android:src="@drawable/playback_ic_captions" />
 
         <ImageButton
-            android:id="@+id/playback_btn_rotate"
+            android:id="@+id/playback_btn_mute"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/playback_rotate"
+            android:contentDescription="@string/action_sound_off"
             android:padding="8dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/playback_ic_rotate" />
+            android:src="@drawable/playback_ic_mute" />
 
         <ImageButton
-            android:id="@+id/playback_btn_pip"
+            android:id="@+id/playback_btn_playlist"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/action_playlist_add"
             android:padding="8dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/playback_ic_pip" />
+            android:src="@drawable/playback_ic_bookmark" />
 
         <ImageButton
             android:id="@+id/playback_btn_more"

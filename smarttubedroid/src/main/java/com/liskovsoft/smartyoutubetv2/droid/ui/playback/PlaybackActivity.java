@@ -15,12 +15,14 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Rational;
+import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -121,6 +123,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private static final int BUTTON_SPEED = com.liskovsoft.smartyoutubetv2.common.R.id.action_video_speed;
     private static final int BUTTON_SUBSCRIBE = com.liskovsoft.smartyoutubetv2.common.R.id.action_subscribe;
     private static final int BUTTON_CHANNEL = com.liskovsoft.smartyoutubetv2.common.R.id.action_channel;
+    private static final int BUTTON_MUTE = com.liskovsoft.smartyoutubetv2.common.R.id.action_sound_off;
+    private static final int BUTTON_PLAYLIST_ADD = com.liskovsoft.smartyoutubetv2.common.R.id.action_playlist_add;
 
     private PlaybackPresenter mPlaybackPresenter;
     private ExoPlayerInitializer mPlayerInitializer;
@@ -366,6 +370,55 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         initControlListeners();
         initButtons();
+        initWindowInsets();
+    }
+
+    /**
+     * The app draws edge to edge (Helpers.makeActivityFullscreen2), and since the notch fix in
+     * SharedModules it draws into the display cutout too. Without this the top row of player
+     * buttons ends up under the status bar / notch in portrait and can't be tapped.
+     *
+     * Padding is added on top of what the layout already declares, so the bars keep their look.
+     * The bottom inset only applies in landscape: in portrait the overlay sits inside the 16:9
+     * video box at the top of the screen, nowhere near the navigation bar.
+     */
+    private void initWindowInsets() {
+        final int topBarPaddingTop = mTopBar.getPaddingTop();
+        final int topBarPaddingLeft = mTopBar.getPaddingLeft();
+        final int topBarPaddingRight = mTopBar.getPaddingRight();
+        final int bottomBarPaddingLeft = mBottomBar.getPaddingLeft();
+        final int bottomBarPaddingRight = mBottomBar.getPaddingRight();
+        final int bottomBarPaddingBottom = mBottomBar.getPaddingBottom();
+
+        mRoot.setOnApplyWindowInsetsListener((v, insets) -> {
+            int top = insets.getSystemWindowInsetTop();
+            int left = insets.getSystemWindowInsetLeft();
+            int right = insets.getSystemWindowInsetRight();
+            int bottom = insets.getSystemWindowInsetBottom();
+
+            // System bars are hidden in fullscreen mode, so the cutout is the only inset left
+            if (VERSION.SDK_INT >= 28) {
+                DisplayCutout cutout = insets.getDisplayCutout();
+
+                if (cutout != null) {
+                    top = Math.max(top, cutout.getSafeInsetTop());
+                    left = Math.max(left, cutout.getSafeInsetLeft());
+                    right = Math.max(right, cutout.getSafeInsetRight());
+                    bottom = Math.max(bottom, cutout.getSafeInsetBottom());
+                }
+            }
+
+            boolean isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+            mTopBar.setPadding(topBarPaddingLeft + left, topBarPaddingTop + top,
+                    topBarPaddingRight + right, mTopBar.getPaddingBottom());
+            mBottomBar.setPadding(bottomBarPaddingLeft + left, mBottomBar.getPaddingTop(),
+                    bottomBarPaddingRight + right, bottomBarPaddingBottom + (isLandscape ? bottom : 0));
+
+            return insets;
+        });
+
+        mRoot.requestApplyInsets();
     }
 
     private void initControlListeners() {
@@ -423,8 +476,9 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         registerButton(BUTTON_QUALITY, findViewById(R.id.playback_btn_quality));
         registerButton(BUTTON_QUALITY, findViewById(R.id.playback_chip_quality));
         registerButton(BUTTON_CAPTIONS, findViewById(R.id.playback_btn_captions));
-        registerButton(BUTTON_ROTATE, findViewById(R.id.playback_btn_rotate));
-        registerButton(BUTTON_PIP, findViewById(R.id.playback_btn_pip));
+        registerButton(BUTTON_MUTE, findViewById(R.id.playback_btn_mute));
+        registerButton(BUTTON_PLAYLIST_ADD, findViewById(R.id.playback_btn_playlist));
+        registerButton(BUTTON_PLAYLIST_ADD, findViewById(R.id.playback_chip_playlist));
         registerButton(BUTTON_LIKE, findViewById(R.id.playback_chip_like));
         registerButton(BUTTON_DISLIKE, findViewById(R.id.playback_chip_dislike));
         registerButton(BUTTON_SHARE, findViewById(R.id.playback_chip_share));
@@ -481,12 +535,13 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
                 com.liskovsoft.smartyoutubetv2.common.R.string.action_video_zoom);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_flip,
                 com.liskovsoft.smartyoutubetv2.common.R.string.video_flip);
-        addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_sound_off,
-                com.liskovsoft.smartyoutubetv2.common.R.string.action_sound_off);
+        // Mute and add-to-playlist have their own buttons in the top bar, so they aren't repeated here
+        addMenuItem(m, BUTTON_ROTATE,
+                com.liskovsoft.smartyoutubetv2.common.R.string.video_rotate);
+        addMenuItem(m, BUTTON_PIP,
+                com.liskovsoft.smartyoutubetv2.common.R.string.action_pip);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_seek_interval,
                 com.liskovsoft.smartyoutubetv2.common.R.string.seek_interval);
-        addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_playlist_add,
-                com.liskovsoft.smartyoutubetv2.common.R.string.action_playlist_add);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_info,
                 com.liskovsoft.smartyoutubetv2.common.R.string.action_video_info);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_video_stats,
@@ -750,6 +805,9 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         // The activity is NOT recreated (configChanges in the manifest): the engine keeps running
         applyOrientation();
+
+        // Status bar and cutout sit on different edges per orientation; recompute the bar padding
+        mRoot.requestApplyInsets();
     }
 
     @TargetApi(24)
