@@ -27,6 +27,8 @@ public class ScreensaverManager {
     private static final int MODE_SCREEN_OFF = 1;
     private static final WeakHashSet<ScreensaverManager> sInstances = new WeakHashSet<>();
     private static boolean sLockInstance;
+    // Dimming protects TV panels from burn-in. On a phone the OS owns the screen timeout.
+    private static boolean sIsSupported = true;
     private final WeakReference<Activity> mActivity;
     private final WeakReference<View> mDimContainer;
     private final Runnable mDimScreen = this::dimScreen;
@@ -105,8 +107,16 @@ public class ScreensaverManager {
         disable();
     }
 
+    /**
+     * Call from Application.onCreate() before any activity starts.
+     * Disabling turns dimming and the screen off feature into no-ops (touch UI).
+     */
+    public static void setSupported(boolean supported) {
+        sIsSupported = supported;
+    }
+
     public void enable() {
-        if (mIsBlocked) {
+        if (!sIsSupported || mIsBlocked) {
             Log.d(TAG, "Screensaver blocked!");
             return;
         }
@@ -136,6 +146,10 @@ public class ScreensaverManager {
         //if (mIsScreenOff) {
         //    return;
         //}
+
+        if (!sIsSupported) {
+            return;
+        }
 
         // NOTE: disable will create infinite loop
         //disable();

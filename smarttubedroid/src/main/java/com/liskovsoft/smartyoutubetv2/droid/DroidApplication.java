@@ -14,6 +14,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.SplashView;
 import com.liskovsoft.smartyoutubetv2.common.app.views.ViewManager;
 import com.liskovsoft.smartyoutubetv2.common.app.views.WebBrowserView;
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
+import com.liskovsoft.smartyoutubetv2.common.misc.ScreensaverManager;
 import com.liskovsoft.smartyoutubetv2.droid.ui.adddevice.AddDeviceActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.browse.BrowseActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.channel.ChannelActivity;
@@ -37,6 +38,9 @@ public class DroidApplication extends MultiDexApplication {
 
         // Phone UI: keep real device density; the TV 960dp emulation breaks touch layouts
         MotherActivity.setTvDpiScalingEnabled(false);
+
+        // Phone UI: the OS owns the screen timeout, so no burn-in dimming or screen off
+        ScreensaverManager.setSupported(false);
 
         setupViewManager();
     }

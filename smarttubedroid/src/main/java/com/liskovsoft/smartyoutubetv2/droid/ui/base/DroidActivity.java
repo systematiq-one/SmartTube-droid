@@ -1,9 +1,5 @@
 package com.liskovsoft.smartyoutubetv2.droid.ui.base;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
 
 /**
@@ -12,15 +8,8 @@ import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
  * addOnResult/addOnPermissions plumbing used by sign-in and backup flows).
  */
 public abstract class DroidActivity extends MotherActivity {
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // TV burn-in screensaver is wrong on phones: the OS owns the screen timeout
-        if (getScreensaverManager() != null) {
-            getScreensaverManager().setBlocked(true);
-        }
-    }
+    // NOTE: the screensaver is turned off app wide in DroidApplication. A per-activity
+    // setBlocked(true) doesn't hold: BasePresenter.enableScreenOffIfNeeded() clears it.
 
     @Override
     protected void onResume() {
