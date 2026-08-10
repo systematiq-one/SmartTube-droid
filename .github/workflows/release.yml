@@ -37,10 +37,33 @@ jobs:
           else
             NAME="${GITHUB_REF_NAME#v}"
           fi
+
+          # The versionCode must never go down or Android refuses to update. Derive it from
+          # the version itself rather than the run number, which resets if the workflow is
+          # renamed and says nothing about ordering: 0.3.1 -> 3001, 1.2.10 -> 1002010.
+          # Leaves room for hand-built test APKs numbered between two releases.
+          CORE="${NAME%%-*}"
+
+          if ! echo "$CORE" | grep -Eq '^[0-9]+(\.[0-9]+){0,2}$'; then
+            echo "::error::Version '$NAME' is not major[.minor[.patch]], e.g. 0.4.0"
+            exit 1
+          fi
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CORE"
+          MAJOR=${MAJOR:-0}
+          MINOR=${MINOR:-0}
+          PATCH=${PATCH:-0}
+
+          if [ "$MINOR" -gt 999 ] || [ "$PATCH" -gt 999 ]; then
+            echo "::error::minor and patch must stay below 1000 (got $CORE)"
+            exit 1
+          fi
+
+          CODE=$((MAJOR * 1000000 + MINOR * 1000 + PATCH))
+
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
-          # Must increase with every release or Android refuses to update
-          echo "code=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-          echo "Building $NAME (versionCode ${{ github.run_number }})"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "Building $NAME (versionCode $CODE)"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
