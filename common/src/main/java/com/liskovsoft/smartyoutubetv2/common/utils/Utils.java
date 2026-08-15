@@ -13,6 +13,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -173,6 +175,46 @@ public class Utils {
     public static void displaySharePlaylistDialog(Context context, String playlistId) {
         Uri playlistUrl = convertToPlaylistUrl(playlistId);
         showMultiChooser(context, playlistUrl);
+    }
+
+    public static void copyVideoLinkToClipboard(Context context, String videoId, int posSec) {
+        copyLinkToClipboard(context, convertToFullVideoUrl(videoId, posSec));
+    }
+
+    public static void copyChannelLinkToClipboard(Context context, String channelId) {
+        copyLinkToClipboard(context, convertToFullChannelUrl(channelId));
+    }
+
+    public static void copyPlaylistLinkToClipboard(Context context, String playlistId) {
+        copyLinkToClipboard(context, convertToPlaylistUrl(playlistId));
+    }
+
+    /**
+     * Puts the link into the system clipboard so it can be pasted elsewhere later.<br/>
+     * Unlike {@link #showMultiChooser(Context, Uri)} this doesn't hand the link to another app.
+     */
+    public static void copyLinkToClipboard(Context context, Uri url) {
+        if (context == null || url == null) {
+            return;
+        }
+
+        ClipboardManager manager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+
+        if (manager == null) {
+            return;
+        }
+
+        try {
+            manager.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.copy_link), url.toString()));
+        } catch (Exception e) { // IllegalStateException, SecurityException on some devices
+            Log.e(TAG, "Can't copy the link to the clipboard", e);
+            return;
+        }
+
+        // Android 13+ shows its own copy confirmation. Avoid the duplicate toast.
+        if (VERSION.SDK_INT < 33) {
+            MessageHelpers.showMessage(context, R.string.link_copied);
+        }
     }
 
     public static void openUrlInternally(Context context, Uri url) {

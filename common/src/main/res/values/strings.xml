@@ -165,6 +165,8 @@
     <string name="card_auto_scrolled_title">Auto-scroll cropped title</string>
     <string name="share_link">Share link</string>
     <string name="share_qr_link">Share link (QR code)</string>
+    <string name="copy_link">Copy video link</string>
+    <string name="link_copied">Link copied</string>
     <string name="subscribe_to_channel">Subscribe to the channel</string>
     <string name="wait_data_loading">Please wait while data is loading…</string>
     <string name="auto_frame_rate_pause">Auto Frame Rate (pause when switching)</string>
