@@ -143,6 +143,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private YouTubeOverlay mYouTubeOverlay;
     private ImageView mBackgroundView;
     private ProgressBar mProgressBar;
+    /** A hide arrived while the player was buffering; applied once buffering ends. */
+    private boolean mProgressHidePending;
     private View mOverlay;
     private View mTopBar;
     private View mCenterBar;
@@ -594,6 +596,16 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         mExoPlayerController.setPlayer(mPlayer);
         mPlayerView.setPlayer(mPlayer);
+
+        // Releases a hide that arrived while the player was still buffering (see showProgressBar)
+        mPlayer.addListener(new Player.EventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if (mProgressHidePending && !isPlayerBuffering()) {
+                    showProgressBar(false);
+                }
+            }
+        });
 
         createMediaSession();
 
@@ -1615,16 +1627,25 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
                 return;
             }
 
-            // Fix interrupted progress (by suggestions, etc). The video player can handle these states correctly.
-            // NOTE: freezes the spinner in both directions, same as PlaybackFragment on TV. Don't narrow this
-            // to hide-only: isLoading() is often true mid-playback, which would leave the spinner stuck on.
-            if (mExoPlayerController != null
-                    && (mExoPlayerController.isLoading() || mExoPlayerController.isBuffering())) {
+            // Fix interrupted progress: suggestions finish loading mid-buffer and hide the spinner
+            // while the video is still stalled. Defer the hide instead of dropping it — these calls
+            // are one-shot, so a swallowed hide would leave the spinner up for the whole video.
+            if (!show && isPlayerBuffering()) {
+                mProgressHidePending = true;
                 return;
             }
 
+            mProgressHidePending = false;
             mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         });
+    }
+
+    /**
+     * Only STATE_BUFFERING counts as stalled. Don't fold isLoading() in here: ExoPlayer reports
+     * loading whenever it tops the buffer up, which is most of a normal playback.
+     */
+    private boolean isPlayerBuffering() {
+        return mExoPlayerController != null && mExoPlayerController.isBuffering();
     }
 
     @Override
