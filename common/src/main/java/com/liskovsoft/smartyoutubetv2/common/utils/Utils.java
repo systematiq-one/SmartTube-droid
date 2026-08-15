@@ -177,8 +177,11 @@ public class Utils {
         showMultiChooser(context, playlistUrl);
     }
 
-    public static void copyVideoLinkToClipboard(Context context, String videoId, int posSec) {
-        copyLinkToClipboard(context, convertToFullVideoUrl(videoId, posSec));
+    /**
+     * Copies the bare link, without the current playback position.
+     */
+    public static void copyVideoLinkToClipboard(Context context, String videoId) {
+        copyLinkToClipboard(context, convertToFullVideoUrl(videoId));
     }
 
     public static void copyChannelLinkToClipboard(Context context, String channelId) {
@@ -246,6 +249,14 @@ public class Utils {
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Chooser intent not found", e);
         }
+    }
+
+    /**
+     * https://youtu.be/nragduYePsQ
+     */
+    public static Uri convertToFullVideoUrl(String videoId) {
+        String url = String.format("https://youtu.be/%s", videoId);
+        return Uri.parse(url);
     }
 
     /**

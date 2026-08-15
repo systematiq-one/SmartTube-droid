@@ -86,18 +86,12 @@ public class AppDialogUtil {
     private static final int FILE_PICKER_REQUEST_CODE = 205;
 
     /**
-     * Adds a "copy link" item to existing dialog.
-     */
-    public static void appendCopyLinkDialogItem(Context context, AppDialogPresenter dialogPresenter, Video video) {
-        appendCopyLinkDialogItem(context, dialogPresenter, video, -1);
-    }
-
-    /**
      * Adds a "copy link" item to existing dialog.<br/>
      * Unlike the share item this puts the link straight into the clipboard instead of
-     * opening the system chooser, so it can be pasted elsewhere later.
+     * opening the system chooser, so it can be pasted elsewhere later.<br/>
+     * The link is bare — no playback position, unlike the share items.
      */
-    public static void appendCopyLinkDialogItem(Context context, AppDialogPresenter dialogPresenter, Video video, int positionSec) {
+    public static void appendCopyLinkDialogItem(Context context, AppDialogPresenter dialogPresenter, Video video) {
         if (video == null) {
             return;
         }
@@ -109,7 +103,7 @@ public class AppDialogUtil {
         dialogPresenter.appendSingleButton(
                 UiOptionItem.from(context.getString(R.string.copy_link), optionItem -> {
                     if (video.videoId != null) {
-                        Utils.copyVideoLinkToClipboard(context, video.videoId, positionSec == -1 ? Utils.toSec(video.getPositionMs()) : positionSec);
+                        Utils.copyVideoLinkToClipboard(context, video.videoId);
                     } else if (video.playlistId != null) {
                         Utils.copyPlaylistLinkToClipboard(context, video.playlistId);
                     } else if (video.channelId != null) {

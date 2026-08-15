@@ -525,7 +525,7 @@ public class PlayerUIController extends BasePlayerController {
         AppDialogPresenter dialogPresenter = getAppDialogPresenter();
 
         int positionSec = Utils.toSec(getPlayer().getPositionMs());
-        AppDialogUtil.appendCopyLinkDialogItem(getContext(), dialogPresenter, getVideo(), positionSec);
+        AppDialogUtil.appendCopyLinkDialogItem(getContext(), dialogPresenter, getVideo());
         AppDialogUtil.appendShareLinkDialogItem(getContext(), dialogPresenter, getVideo(), positionSec);
         AppDialogUtil.appendShareQRLinkDialogItem(getContext(), dialogPresenter, getVideo(), positionSec);
         AppDialogUtil.appendShareEmbedLinkDialogItem(getContext(), dialogPresenter, getVideo(), positionSec);

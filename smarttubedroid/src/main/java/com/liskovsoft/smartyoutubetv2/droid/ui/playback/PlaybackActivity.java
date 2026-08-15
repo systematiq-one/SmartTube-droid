@@ -1611,9 +1611,19 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     public void showProgressBar(boolean show) {
         // May be called off the main thread (same as on TV)
         runOnUiThread(() -> {
-            if (mProgressBar != null) {
-                mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+            if (mProgressBar == null) {
+                return;
             }
+
+            // Fix interrupted progress (by suggestions, etc). The video player can handle these states correctly.
+            // NOTE: freezes the spinner in both directions, same as PlaybackFragment on TV. Don't narrow this
+            // to hide-only: isLoading() is often true mid-playback, which would leave the spinner stuck on.
+            if (mExoPlayerController != null
+                    && (mExoPlayerController.isLoading() || mExoPlayerController.isBuffering())) {
+                return;
+            }
+
+            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         });
     }
 
