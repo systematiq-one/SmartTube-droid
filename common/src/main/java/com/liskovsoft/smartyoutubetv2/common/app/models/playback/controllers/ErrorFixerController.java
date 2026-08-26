@@ -51,6 +51,7 @@ public class ErrorFixerController extends BasePlayerController implements OnLong
             mVideoLoaderController.reloadVideo();
         } else if (!mBufferingDetector.isPlayable()) {
             // Some clients may just hang at the video start
+            MessageHelpers.showLongMessage(getContext(), "Fixing stalled client...");
             YouTubeServiceManager.instance().applyNoPlaybackFix();
             mVideoLoaderController.reloadVideo();
         } else if (!getPlayerTweaksData().isNetworkErrorFixingDisabled()) {
@@ -176,17 +177,21 @@ public class ErrorFixerController extends BasePlayerController implements OnLong
             //    YouTubeServiceManager.instance().applyNoPlaybackFix(); // Response code: 403
             //}
 
+            restartEngine = false;
+            showMessage = false;
+
             boolean isGeneralError = Helpers.startsWithAny(errorContent, "Response code: 429", "Response code: 500");
             if (isGeneralError && isSubtitlesEnabled()) {
                 disableSubtitles(); // Response code: 429
             } else if (isGeneralError && getPlayerTweaksData().isHighBitrateFormatsEnabled()) {
                 getPlayerTweaksData().setHighBitrateFormatsEnabled(false); // Response code: 429
+            } else if (!mBufferingDetector.isPlayable()) { // Response code: 403
+                switchNextEngine();
+                restartEngine = true;
+                showMessage = true;
             } else {
                 YouTubeServiceManager.instance().applyNoPlaybackFix(); // Response code: 403
             }
-
-            restartEngine = false;
-            showMessage = false;
         } else if (type == PlayerEventListener.ERROR_TYPE_RENDERER && rendererIndex == PlayerEventListener.RENDERER_INDEX_SUBTITLE) {
             // "Response code: 429" (subtitle error)
             // "Response code: 500" (subtitle error)
@@ -321,18 +326,14 @@ public class ErrorFixerController extends BasePlayerController implements OnLong
             return;
         }
 
-        getPlayerTweaksData().setPlayerDataSource(getFasterDataSource());
-    }
-
-    private static int getFasterDataSource() {
-        return Utils.skipCronet() ? PlayerTweaksData.PLAYER_DATA_SOURCE_DEFAULT : PlayerTweaksData.PLAYER_DATA_SOURCE_CRONET;
+        getPlayerTweaksData().setPlayerDataSource(Utils.getFasterDataSource());
     }
 
     /**
      * Bad idea. Faster source is different among devices
      */
     private boolean isFasterDataSourceEnabled() {
-        int fasterDataSource = getFasterDataSource();
+        int fasterDataSource = Utils.getFasterDataSource();
         return getPlayerTweaksData().getPlayerDataSource() == fasterDataSource;
     }
 
