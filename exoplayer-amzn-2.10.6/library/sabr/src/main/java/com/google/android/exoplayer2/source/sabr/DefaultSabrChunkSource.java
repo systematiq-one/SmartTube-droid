@@ -306,6 +306,17 @@ public class DefaultSabrChunkSource implements SabrChunkSource {
         RepresentationHolder representationHolder =
                 representationHolders[trackSelection.getSelectedIndex()];
 
+        // FIX: NPE on videos carrying a subtitle track.
+        // createExtractorWrapper() returns null for raw text (and for a null container mime
+        // type), and SABR has no equivalent of the SingleSampleMediaChunk branch stock DASH
+        // uses in that case - it is commented out in newMediaChunk() below. Without this the
+        // null wrapper reaches ContainerMediaChunk.load() and throws. Report the track as
+        // ended instead, so audio and video keep playing.
+        if (representationHolder.extractorWrapper == null) {
+            out.endOfStream = true;
+            return;
+        }
+
         if (representationHolder.extractorWrapper != null) {
             Representation selectedRepresentation = representationHolder.representation;
             RangedUri pendingInitializationUri = null;
