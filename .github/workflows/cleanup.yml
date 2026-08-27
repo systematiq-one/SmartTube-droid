@@ -8,7 +8,10 @@ on:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-    if: github.event.repository.fork == false
+    # Upstream gates this on the repo not being a fork, so it never deletes history
+    # in anyone's fork. This repo is a fork of theirs, which left the job skipping
+    # every night, so match on the owner instead of the fork flag.
+    if: github.repository_owner == 'systematiq-one'
     permissions:
       actions: write
     steps:
