@@ -29,6 +29,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Apply the submodule patches
+        run: sh patches/apply.sh
+
       - name: Work out the version
         id: version
         run: |
