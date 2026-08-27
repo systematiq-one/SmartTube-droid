@@ -9,11 +9,11 @@
 # Check, then delete the patch file.
 set -e
 
-# Absolute, so it stays correct after git apply resolves it against the
-# submodule toplevel rather than the working directory
+# Absolute, so it stays correct wherever the script is invoked from
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
 apply() {
+    name="$2"
     submodule="$root/$1"
     patch="$root/patches/$2"
 
@@ -23,18 +23,30 @@ apply() {
     fi
 
     if git -C "$submodule" apply --reverse --check "$patch" 2>/dev/null; then
-        echo "already applied: $2"
+        echo "already applied: $name"
         return
     fi
 
-    if ! git -C "$submodule" apply -v "$patch"; then
-        echo "FAILED to apply: $2" >&2
-        echo "  submodule $1 is at $(git -C "$submodule" rev-parse HEAD)" >&2
-        echo "  if upstream already fixed this, delete the patch file" >&2
-        exit 1
+    if git -C "$submodule" apply "$patch" 2>/dev/null; then
+        echo "applied: $name"
+        return
     fi
 
-    echo "applied: $2"
+    # Line endings differing between the patch and the checkout are the usual
+    # reason a byte-exact match fails; the change itself still applies
+    if git -C "$submodule" apply --ignore-whitespace "$patch" 2>/dev/null; then
+        echo "applied (ignoring whitespace): $name"
+        return
+    fi
+
+    echo "FAILED to apply: $name" >&2
+    echo "  submodule $1 at $(git -C "$submodule" rev-parse HEAD)" >&2
+    echo "  --- git apply -v ---" >&2
+    git -C "$submodule" apply -v "$patch" >&2 || true
+    echo "  --- target file as checked out ---" >&2
+    sed -n '70,80p' "$submodule/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/common/helpers/QueryBuilder.kt" | cat -A >&2 || true
+    echo "  if upstream already fixed this, delete the patch file" >&2
+    exit 1
 }
 
 apply MediaServiceCore mediaservicecore-signature-timestamp-npe.patch
