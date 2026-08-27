@@ -79,6 +79,8 @@ jobs:
           done
 
       - name: Update Release Notes
+        # vt_report.txt only exists when the scan ran, which needs VIRUS_TOTAL_API_KEY
+        if: steps.vt.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
