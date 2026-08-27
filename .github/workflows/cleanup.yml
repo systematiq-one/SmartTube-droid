@@ -1,8 +1,9 @@
 name: Cleanup old workflow runs
 
+# Run it by hand from the Actions tab. The runs it clears only appear when a
+# release is published manually, so there is nothing for a schedule to do on
+# almost every day.
 on:
-  schedule:
-    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
