@@ -43,10 +43,9 @@ apply() {
     echo "  submodule $1 at $(git -C "$submodule" rev-parse HEAD)" >&2
     echo "  --- git apply -v ---" >&2
     git -C "$submodule" apply -v "$patch" >&2 || true
-    echo "  --- target file as checked out ---" >&2
-    sed -n '70,80p' "$submodule/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/common/helpers/QueryBuilder.kt" | cat -A >&2 || true
     echo "  if upstream already fixed this, delete the patch file" >&2
     exit 1
 }
 
-apply MediaServiceCore mediaservicecore-signature-timestamp-npe.patch
+# No patches at the moment - upstream took the QueryBuilder NPE fix. Add new
+# ones as:  apply <submodule> <patch-file>
