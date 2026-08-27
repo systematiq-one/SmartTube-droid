@@ -9,17 +9,32 @@
 # Check, then delete the patch file.
 set -e
 
-apply() {
-    submodule="$1"
-    patch="$2"
+# Absolute, so it stays correct after git apply resolves it against the
+# submodule toplevel rather than the working directory
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
-    if git -C "$submodule" apply --reverse --check "../patches/$patch" 2>/dev/null; then
-        echo "already applied: $patch"
+apply() {
+    submodule="$root/$1"
+    patch="$root/patches/$2"
+
+    if [ ! -d "$submodule" ]; then
+        echo "missing submodule: $1 (run: git submodule update --init --recursive)" >&2
+        exit 1
+    fi
+
+    if git -C "$submodule" apply --reverse --check "$patch" 2>/dev/null; then
+        echo "already applied: $2"
         return
     fi
 
-    git -C "$submodule" apply "../patches/$patch"
-    echo "applied: $patch"
+    if ! git -C "$submodule" apply -v "$patch"; then
+        echo "FAILED to apply: $2" >&2
+        echo "  submodule $1 is at $(git -C "$submodule" rev-parse HEAD)" >&2
+        echo "  if upstream already fixed this, delete the patch file" >&2
+        exit 1
+    fi
+
+    echo "applied: $2"
 }
 
 apply MediaServiceCore mediaservicecore-signature-timestamp-npe.patch
