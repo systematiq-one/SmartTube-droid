@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.source.chunk.ContainerMediaChunk;
 import com.google.android.exoplayer2.source.chunk.InitializationChunk;
 import com.google.android.exoplayer2.source.chunk.MediaChunk;
 import com.google.android.exoplayer2.source.chunk.MediaChunkIterator;
+import com.google.android.exoplayer2.source.chunk.SingleSampleMediaChunk;
 import com.google.android.exoplayer2.source.sabr.PlayerEmsgHandler.PlayerTrackEmsgHandler;
 import com.google.android.exoplayer2.source.sabr.manifest.AdaptationSet;
 import com.google.android.exoplayer2.source.sabr.manifest.RangedUri;
@@ -306,14 +307,15 @@ public class DefaultSabrChunkSource implements SabrChunkSource {
         RepresentationHolder representationHolder =
                 representationHolders[trackSelection.getSelectedIndex()];
 
-        // FIX: NPE on videos carrying a subtitle track.
+        // FIX: subtitles under SABR.
         // createExtractorWrapper() returns null for raw text (and for a null container mime
-        // type), and SABR has no equivalent of the SingleSampleMediaChunk branch stock DASH
-        // uses in that case - it is commented out in newMediaChunk() below. Without this the
-        // null wrapper reaches ContainerMediaChunk.load() and throws. Report the track as
-        // ended instead, so audio and video keep playing.
+        // type), and newMediaChunk() below only knows how to build a ContainerMediaChunk, so
+        // the null wrapper used to reach ContainerMediaChunk.load() and throw an NPE. Such a
+        // representation isn't served over the SABR endpoint at all - it's a plain single
+        // segment download of the timedtext url - so load it the way stock DASH does.
         if (representationHolder.extractorWrapper == null) {
-            out.endOfStream = true;
+            out.chunk = newSingleSampleMediaChunk(representationHolder, previous);
+            out.endOfStream = out.chunk == null;
             return;
         }
 
@@ -570,6 +572,50 @@ public class DefaultSabrChunkSource implements SabrChunkSource {
         Log.e(TAG, "Load init chunk: track=" + trackType + ", rn=" + manifest.getSabrRequestNumber());
         return new InitializationChunk(dataSource, dataSpec, trackFormat,
                 trackSelectionReason, trackSelectionData, representationHolder.extractorWrapper);
+    }
+
+    /**
+     * Builds the chunk carrying a whole raw text (subtitle) representation, or null once that
+     * chunk has already been loaded.
+     *
+     * <p>Raw text representations have no extractor and no SABR segments: the manifest gives them
+     * a single segment pointing at the timedtext url, which is fetched in one plain request
+     * covering the whole period.
+     */
+    @Nullable
+    protected Chunk newSingleSampleMediaChunk(
+            RepresentationHolder representationHolder, @Nullable MediaChunk previous) {
+        // There's exactly one segment, so anything past it is the end of the stream.
+        long segmentNum = previous == null ? 0 : previous.getNextChunkIndex();
+        if (segmentNum > 0) {
+            return null;
+        }
+
+        Representation representation = representationHolder.representation;
+        SabrSegmentIndex segmentIndex = representation.getIndex();
+        RangedUri segmentUri = segmentIndex != null ? segmentIndex.getSegmentUrl(segmentNum) : null;
+        if (segmentUri == null) {
+            return null;
+        }
+
+        DataSpec dataSpec = new DataSpec(
+                segmentUri.resolveUri(representation.baseUrl),
+                segmentUri.start,
+                segmentUri.length,
+                representation.getCacheKey());
+        Format trackFormat = trackSelection.getSelectedFormat();
+        Log.e(TAG, "Load text chunk: track=" + trackType + ", uri=" + dataSpec.uri);
+        return new SingleSampleMediaChunk(
+                dataSource,
+                dataSpec,
+                trackFormat,
+                trackSelection.getSelectionReason(),
+                trackSelection.getSelectionData(),
+                /* startTimeUs= */ 0,
+                /* endTimeUs= */ representationHolder.periodDurationUs,
+                segmentNum,
+                trackType,
+                trackFormat);
     }
 
     protected Chunk newMediaChunk(
