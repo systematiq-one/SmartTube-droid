@@ -54,6 +54,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SubtitleView;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.button.MaterialButton;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaItemFormatInfo;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaSubtitle;
@@ -554,10 +555,13 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             return null;
         }
 
-        String language = origin.getName() != null ? origin.getName() : origin.getLanguageCode();
+        String name = origin.getName() != null ? origin.getName() : origin.getLanguageCode();
+        // Both manifest builders hand this string to ExoPlayer as the track language, and the
+        // Format constructor normalizes it (lowercase, among other things) before storing it.
+        // Run it through the very same call or the comparison never matches.
+        String language = Util.normalizeLanguageCode(name);
 
         for (FormatItem format : formats) {
-            // Both manifest builders use exactly this string as the track language
             if (format != null && !format.isDefault() && Helpers.equals(language, format.getLanguage())) {
                 return format;
             }
