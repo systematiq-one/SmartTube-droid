@@ -381,8 +381,9 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
      * buttons ends up under the status bar / notch in portrait and can't be tapped.
      *
      * Padding is added on top of what the layout already declares, so the bars keep their look.
-     * The bottom inset only applies in landscape: in portrait the overlay sits inside the 16:9
-     * video box at the top of the screen, nowhere near the navigation bar.
+     * The overlay only needs the bottom inset in landscape — in portrait it sits inside the 16:9
+     * video box at the top of the screen. Down there it's the suggestions list that has to clear
+     * the navigation bar instead.
      */
     private void initWindowInsets() {
         final int topBarPaddingTop = mTopBar.getPaddingTop();
@@ -391,6 +392,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         final int bottomBarPaddingLeft = mBottomBar.getPaddingLeft();
         final int bottomBarPaddingRight = mBottomBar.getPaddingRight();
         final int bottomBarPaddingBottom = mBottomBar.getPaddingBottom();
+        final int suggestionsPaddingBottom = mSuggestionsView.getPaddingBottom();
 
         mRoot.setOnApplyWindowInsetsListener((v, insets) -> {
             int top = insets.getSystemWindowInsetTop();
@@ -416,6 +418,12 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
                     topBarPaddingRight + right, mTopBar.getPaddingBottom());
             mBottomBar.setPadding(bottomBarPaddingLeft + left, mBottomBar.getPaddingTop(),
                     bottomBarPaddingRight + right, bottomBarPaddingBottom + (isLandscape ? bottom : 0));
+
+            // In portrait the navigation bar stays on screen (see applySystemUi) and the panel
+            // reaches the bottom edge, so the suggestions have to clear it. clipToPadding is off,
+            // so the rows still scroll underneath.
+            mSuggestionsView.setPadding(mSuggestionsView.getPaddingLeft(), mSuggestionsView.getPaddingTop(),
+                    mSuggestionsView.getPaddingRight(), suggestionsPaddingBottom + (isLandscape ? 0 : bottom));
 
             return insets;
         });
@@ -784,21 +792,24 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         applySystemUi(fullscreen);
     }
 
-    @SuppressWarnings("deprecation")
+    /**
+     * Fullscreen (landscape/PIP) hides the navigation bar; portrait keeps it on screen so the
+     * back/home/recents buttons don't have to be swiped up first. The status bar stays hidden
+     * either way — the overlay's top row sits where it would be.
+     */
     private void applySystemUi(boolean fullscreen) {
-        View decorView = getWindow().getDecorView();
+        setNavigationBarVisible(!fullscreen);
+    }
 
-        if (fullscreen) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        } else {
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        }
+    /**
+     * Called on every resume — MotherActivity hides the bars again each time, and coming back
+     * from a dialog or from PIP must not leave portrait without its navigation bar. Overridden
+     * because PIP counts as fullscreen here, and because the insets are handled by
+     * {@link #initWindowInsets()} rather than by the base class.
+     */
+    @Override
+    protected void applySystemBars() {
+        applySystemUi(mIsLandscape || isInPIPMode());
     }
 
     private void toggleFullscreen() {
