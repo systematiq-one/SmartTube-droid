@@ -484,8 +484,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
      * {@code onButtonLongClicked} — exactly like TV's action buttons.
      */
     private void initButtons() {
-        registerButton(BUTTON_QUALITY, findViewById(R.id.playback_btn_quality));
         registerButton(BUTTON_QUALITY, findViewById(R.id.playback_chip_quality));
+        registerButton(BUTTON_SPEED, findViewById(R.id.playback_btn_speed));
         registerButton(BUTTON_CAPTIONS, findViewById(R.id.playback_btn_captions));
         registerButton(BUTTON_MUTE, findViewById(R.id.playback_btn_mute));
         registerButton(BUTTON_PLAYLIST_ADD, findViewById(R.id.playback_btn_playlist));
@@ -633,6 +633,9 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         PopupMenu menu = new PopupMenu(this, anchor);
         Menu m = menu.getMenu();
 
+        // The top bar slot went to the speed toggle, so quality lives here now
+        addMenuItem(m, BUTTON_QUALITY,
+                com.liskovsoft.smartyoutubetv2.common.R.string.action_high_quality);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_playback_queue,
                 com.liskovsoft.smartyoutubetv2.common.R.string.action_playback_queue);
         addMenuItem(m, com.liskovsoft.smartyoutubetv2.common.R.id.action_repeat,

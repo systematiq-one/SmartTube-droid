@@ -51,15 +51,17 @@
             android:textColor="@color/playback_control"
             android:textSize="14sp" />
 
+        <!-- Quality moved to the overflow menu: this slot is the speed toggle
+             (tap = last used speed, long press = the speed list) -->
         <ImageButton
-            android:id="@+id/playback_btn_quality"
+            android:id="@+id/playback_btn_speed"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/playback_quality"
+            android:contentDescription="@string/action_video_speed"
             android:padding="8dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/playback_ic_hd" />
+            android:src="@drawable/playback_ic_speed" />
 
         <ImageButton
             android:id="@+id/playback_btn_captions"
