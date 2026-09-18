@@ -39,4 +39,11 @@ public interface PlayerUI {
     void setSeekBarSegments(List<SeekBarSegment> segments);
     void updateEndingTime();
     void setChatReceiver(ChatReceiver chatReceiver);
+
+    /**
+     * Video details the player screen may show next to the suggestions: the full description
+     * and the key the comments are loaded with. Fed by {@code PlayerUIController.onMetadata()};
+     * either argument may be null (no description / comments disabled).
+     */
+    void setVideoDetails(String description, String commentsKey);
 }

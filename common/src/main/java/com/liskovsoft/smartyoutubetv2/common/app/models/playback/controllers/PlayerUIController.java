@@ -382,6 +382,7 @@ public class PlayerUIController extends BasePlayerController {
         getPlayer().setButtonState(R.id.action_rotate, getPlayerData().getRotationAngle() == 0 ? PlayerUI.BUTTON_OFF : PlayerUI.BUTTON_ON);
         getPlayer().setButtonState(R.id.action_subscribe, metadata.isSubscribed() ? PlayerUI.BUTTON_ON : PlayerUI.BUTTON_OFF);
         getPlayer().setButtonState(R.id.action_afr, getPlayerData().isAfrEnabled() ? PlayerUI.BUTTON_ON : PlayerUI.BUTTON_OFF);
+        getPlayer().setVideoDetails(metadata.getDescription(), metadata.getCommentsKey());
     }
 
     @Override

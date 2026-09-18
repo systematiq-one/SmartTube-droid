@@ -212,6 +212,11 @@ public class EmbedPlayerView extends PlayerView implements PlaybackView {
     }
 
     @Override
+    public void setVideoDetails(String description, String commentsKey) {
+
+    }
+
+    @Override
     public void setVideo(Video item) {
         mVideo = item;
 

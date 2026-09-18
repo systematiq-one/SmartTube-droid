@@ -939,6 +939,11 @@ public class PlaybackFragment extends SeekModePlaybackFragment implements Playba
         }
     }
 
+    @Override
+    public void setVideoDetails(String description, String commentsKey) {
+        // TV shows both through the comments/description dialogs, not inline.
+    }
+
     // End Ui events
 
     // Begin Engine Events
