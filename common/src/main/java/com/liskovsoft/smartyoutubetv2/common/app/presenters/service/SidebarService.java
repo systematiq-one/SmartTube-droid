@@ -11,6 +11,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.AppPrefs;
 import com.liskovsoft.smartyoutubetv2.common.prefs.AppPrefs.ProfileChangeListener;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -191,6 +192,56 @@ public class SidebarService implements ProfileChangeListener {
             mPinnedItems.add(index + shift, current);
             persistState();
         }
+    }
+
+    /**
+     * Rearranges the sidebar so that the {@code headIds} sections come first and the
+     * {@code tailIds} ones come last, each in the order given. Everything not listed —
+     * sections plus pinned channels and playlists — keeps its relative order in between.
+     * Ids that aren't currently pinned are skipped.
+     */
+    public void orderSections(int[] headIds, int[] tailIds) {
+        List<Video> head = findPinnedItems(headIds);
+        List<Video> tail = findPinnedItems(tailIds);
+
+        List<Video> ordered = new ArrayList<>(head);
+
+        for (Video item : mPinnedItems) {
+            if (!containsSection(head, item) && !containsSection(tail, item)) {
+                ordered.add(item);
+            }
+        }
+
+        ordered.addAll(tail);
+
+        if (ordered.size() != mPinnedItems.size()) { // never drop a section on a bad id list
+            return;
+        }
+
+        mPinnedItems.clear();
+        mPinnedItems.addAll(ordered);
+
+        persistState();
+    }
+
+    private List<Video> findPinnedItems(int[] sectionIds) {
+        List<Video> result = new ArrayList<>();
+
+        for (int sectionId : sectionIds) {
+            int index = findPinnedItemIndex(sectionId);
+
+            if (index != -1) {
+                result.add(mPinnedItems.get(index));
+            }
+        }
+
+        return result;
+    }
+
+    private boolean containsSection(List<Video> items, Video item) {
+        int sectionId = getSectionId(item);
+
+        return Helpers.findFirst(items, obj -> getSectionId(obj) == sectionId) != null;
     }
 
     private int findPinnedItemIndex(int sectionId) {
