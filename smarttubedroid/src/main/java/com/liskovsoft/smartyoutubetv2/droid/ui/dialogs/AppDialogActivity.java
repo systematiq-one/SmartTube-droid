@@ -20,7 +20,6 @@ import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
 public class AppDialogActivity extends DroidActivity {
     private static final String FRAGMENT_TAG = "dialog_app_dialog_fragment";
     private AppDialogFragment mFragment;
-    private boolean mIsBackPressed;
     private boolean mIsFinishNotified;
 
     @Override
@@ -38,26 +37,12 @@ public class AppDialogActivity extends DroidActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        // Distinguish system back from other finish paths: back pops one dialog
-        // screen first (TV AppDialogActivity contract)
-        mIsBackPressed = true;
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mIsBackPressed = false;
-    }
-
     /**
      * Presenter-initiated close ({@code closeDialog()}, close timeout, scrim tap):
      * closes the whole dialog, skipping the back-press pop-one-screen logic.
      */
     void finishFromView() {
-        mIsBackPressed = false;
+        resetBackState();
         finish();
     }
 
@@ -71,8 +56,11 @@ public class AppDialogActivity extends DroidActivity {
     @Override
     public void finish() {
         if (mFragment != null) {
-            if (mIsBackPressed && mFragment.canGoBack()) {
-                mIsBackPressed = false;
+            // Distinguish system back from other finish paths: back pops one dialog
+            // screen first (TV AppDialogActivity contract)
+            if (isBackPressed() && mFragment.canGoBack()) {
+                // No onResume follows, so the shared flag has to be cleared explicitly
+                resetBackState();
                 mFragment.goBack();
                 return;
             }

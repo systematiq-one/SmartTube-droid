@@ -112,7 +112,8 @@ public class ScreensaverManager {
 
     /**
      * Call from Application.onCreate() before any activity starts.
-     * Disabling turns dimming and the screen off feature into no-ops (touch UI).
+     * Disabling turns dimming and the screen off feature into no-ops (touch UI). Holding the
+     * display awake for playback still works, since that is wanted on a phone too.
      */
     public static void setSupported(boolean supported) {
         sIsSupported = supported;
@@ -120,6 +121,17 @@ public class ScreensaverManager {
 
     public void enable() {
         if (!sIsSupported) {
+            // No dimming on a touch UI, but the display still has to stay awake while a video
+            // plays - and disable() only ever takes FLAG_KEEP_SCREEN_ON, never gives it back.
+            // Reassert both directions so the flag can not get stuck on (phone never sleeps
+            // after the video ends) nor stuck off (screen sleeps mid-video once suspend() has
+            // released it behind an overlay dialog, which pauses us without stopping us).
+            if (isPlaying()) {
+                disableSystemScreensaver();
+            } else {
+                enableSystemScreensaver();
+            }
+
             return;
         }
 

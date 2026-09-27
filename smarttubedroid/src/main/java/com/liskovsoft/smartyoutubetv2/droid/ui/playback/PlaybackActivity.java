@@ -243,7 +243,6 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     private boolean mIsEngineBlocked;
     private boolean mIsScrubbing;
-    private boolean mIsBackPressed;
     private boolean mIsOverlayShown;
     private boolean mIsLandscape;
     private int mZoomPercents = 100;
@@ -293,8 +292,6 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     @Override
     protected void onResume() {
         super.onResume();
-
-        mIsBackPressed = false;
 
         if (VERSION.SDK_INT <= 23 || mPlayer == null) {
             initializePlayer();
@@ -352,12 +349,12 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     @Override
     public void onBackPressed() {
-        // The expanded description/comments sheet takes back first
+        // The expanded description/comments sheet takes back first.
+        // Returning here skips super, so the back state stays unset - which is what we
+        // want: the sheet consumed the gesture, the activity isn't being left.
         if (onDetailsBack()) {
             return;
         }
-
-        mIsBackPressed = true;
 
         super.onBackPressed();
     }
@@ -1338,7 +1335,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         super.onUserLeaveHint();
 
         // The activity may just be overlapped by a dialog/search: not a real leave
-        if (mIsBackPressed || isFinishing() || getViewManager().isNewViewPending()
+        if (isBackPressed() || isFinishing() || getViewManager().isNewViewPending()
                 || getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_BACK) {
             return;
         }
@@ -1402,7 +1399,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     }
 
     private boolean skipPip() {
-        return mIsBackPressed
+        return isBackPressed()
                 && getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_HOME;
     }
 
