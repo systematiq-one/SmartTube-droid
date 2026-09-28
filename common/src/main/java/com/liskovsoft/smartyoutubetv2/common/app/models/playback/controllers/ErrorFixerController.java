@@ -355,6 +355,14 @@ public class ErrorFixerController extends BasePlayerController implements OnLong
     private void disableSubtitles() {
         getPlayerData().setSubtitlesPerChannelEnabled(false); // Important!
         getPlayerData().setFormat(FormatItem.SUBTITLE_NONE);
+
+        // The lines above only update the stored preference. A track picked from the subtitle
+        // dialog also leaves a selection override in the track selector, and reloadVideo()
+        // doesn't recreate the selector - so without deselecting here the reload re-selects the
+        // failing track and the error repeats for as long as the video plays.
+        if (getPlayer() != null) {
+            getPlayer().setFormat(FormatItem.SUBTITLE_NONE);
+        }
     }
 
     private boolean isStreamEnded() {

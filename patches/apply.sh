@@ -47,5 +47,9 @@ apply() {
     exit 1
 }
 
-# No patches at the moment - upstream took the QueryBuilder NPE fix. Add new
-# ones as:  apply <submodule> <patch-file>
+# Add new ones as:  apply <submodule> <patch-file>
+
+# Upstream 32.59 made innertube the primary format-info provider. Those streams are
+# SABR, and their caption urls answer with an empty body, so subtitles never decode.
+# Puts the legacy provider back in front, with innertube still used as the fallback.
+apply MediaServiceCore mediaservicecore-legacy-format-info-first.patch

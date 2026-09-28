@@ -1,0 +1,17 @@
+diff --git a/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/service/internal/FormatInfoWrapper.kt b/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/service/internal/FormatInfoWrapper.kt
+index da75e2f5..eaeec149 100644
+--- a/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/service/internal/FormatInfoWrapper.kt
++++ b/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/service/internal/FormatInfoWrapper.kt
+@@ -12,7 +12,11 @@ import com.liskovsoft.youtubeapi.videoinfo.V2.VideoInfoService
+ 
+ internal object FormatInfoWrapper {
+     private var mCachedFormatInfo: MediaItemFormatInfo? = null
+-    private var mTryInnertubeFirst: Boolean = true
++    // Restores the provider order this class replaced: YouTubeMediaItemService.getFormatInfo()
++    // asked the legacy VideoInfoService first and only fell back to innertube when the video
++    // came back unplayable. Innertube-first serves SABR streams whose caption urls return an
++    // empty body, so subtitles cannot be decoded at all.
++    private var mTryInnertubeFirst: Boolean = false
+     private val mInnertubeResult = object { var isUnplayable: Boolean = false; var client: AppClient? = null }
+     private val mInnertubeProvider: (String, String?) -> MediaItemFormatInfo? =
+         { videoId, clickTrackingParams ->

@@ -165,7 +165,14 @@ public final class TtmlDecoder extends SimpleSubtitleDecoder {
         xmlParser.next();
         eventType = xmlParser.getEventType();
       }
-      return ttmlSubtitle;
+      // A chunk that isn't a standalone TTML document (empty or truncated body) leaves
+      // ttmlSubtitle unset. Report it instead of returning null: the caller stores the
+      // result as the output buffer content, where null crashes TextRenderer.render().
+      if (ttmlSubtitle != null) {
+        return ttmlSubtitle;
+      } else {
+        throw new SubtitleDecoderException("No TTML subtitles found");
+      }
     } catch (XmlPullParserException xppe) {
       throw new SubtitleDecoderException("Unable to decode source", xppe);
     } catch (IOException e) {
