@@ -44,6 +44,12 @@ public class SuggestionsController extends BasePlayerController {
     private ContentService mContentService;
     private BrowseProcessorManager mBrowseProcessor;
     private Video mNextSectionVideo;
+    /**
+     * The mix as it was when it started. YouTube rebuilds the mix around every song it is asked about
+     * (that song goes first), so following its "next" pointer bounces back to the seed song.
+     */
+    private VideoGroup mMixGroup;
+    private String mMixPlaylistId;
     private int mFocusCount;
     private int mNextRetryCount;
     private List<ChapterItem> mChapters;
@@ -253,7 +259,17 @@ public class SuggestionsController extends BasePlayerController {
 
         // NOTE: Load suggestions from mediaItem isn't robust. Because playlistId may be initialized from RemoteControlManager.
         // Video might be loaded from Channels section (has playlistParams)
-        observable = mMediaItemService.getMetadataObserve(video.videoId, video.getPlaylistId(), video.playlistIndex, video.playlistParams);
+        String playlistId = video.getPlaylistId();
+        int playlistIndex = video.playlistIndex;
+
+        // Same as the website: a song played on its own gets YouTube's "Mix - <song>" queue.
+        // YouTube only returns the mix for music, other videos get the regular suggestions.
+        if (playlistId == null && isMixCandidate(video)) {
+            playlistId = Video.createMixPlaylistId(video.videoId);
+            playlistIndex = 0;
+        }
+
+        observable = mMediaItemService.getMetadataObserve(video.videoId, playlistId, playlistIndex, video.playlistParams);
 
         Disposable metadataAction = observable
                 .subscribe(
@@ -272,6 +288,48 @@ public class SuggestionsController extends BasePlayerController {
         mActions.add(metadataAction);
     }
 
+    private static boolean isMixCandidate(Video video) {
+        return video.videoId != null && video.playlistParams == null && !video.isRemote
+                && !video.isLive && !video.isUpcoming && !video.isShorts;
+    }
+
+    /**
+     * Keep showing the mix the user is walking through instead of the one rebuilt around the current song.
+     * The last song of the list takes the fresh mix, so playback goes on.
+     */
+    private VideoGroup getMixGroup(Video video, MediaGroup group) {
+        String mixId = video.playlistInfo.getPlaylistId();
+
+        if (mMixGroup != null && Helpers.equals(mMixPlaylistId, mixId)) {
+            Video current = mMixGroup.findVideoById(video.videoId);
+
+            if (current != null && mMixGroup.indexOf(current) < mMixGroup.getSize() - 1) {
+                return mMixGroup;
+            }
+        }
+
+        mMixGroup = VideoGroup.from(group);
+        mMixPlaylistId = mixId;
+
+        return mMixGroup;
+    }
+
+    private Video getNextMixVideo(Video video) {
+        if (mMixGroup == null || !video.isPlayingYouTubeMix() || !Helpers.equals(mMixPlaylistId, video.playlistInfo.getPlaylistId())) {
+            return null;
+        }
+
+        Video current = mMixGroup.findVideoById(video.videoId);
+
+        if (current == null) {
+            return null;
+        }
+
+        int nextIdx = mMixGroup.indexOf(current) + 1;
+
+        return nextIdx < mMixGroup.getSize() ? mMixGroup.get(nextIdx) : null;
+    }
+
     public Video getNext() {
         if (getPlayer() == null || getVideo() == null) {
             return null;
@@ -285,6 +343,8 @@ public class SuggestionsController extends BasePlayerController {
             result = next;
         } else if (mNextSectionVideo != null && !getVideo().isShuffled) {
             result = mNextSectionVideo;
+        } else if (!getVideo().isShuffled && getNextMixVideo(getVideo()) != null) {
+            result = getNextMixVideo(getVideo());
         } else if (getVideo().nextMediaItem != null) {
             result = Video.from(getVideo().nextMediaItem);
         }
@@ -402,13 +462,17 @@ public class SuggestionsController extends BasePlayerController {
             }
 
             if (group != null && !group.isEmpty()) {
-                VideoGroup videoGroup = VideoGroup.from(group);
+                VideoGroup videoGroup = groupIndex == 0 && video.isPlayingYouTubeMix() ? getMixGroup(video, group) : VideoGroup.from(group);
 
                 if (TextUtils.isEmpty(videoGroup.getTitle())) {
                     videoGroup.setTitle(getContext().getString(R.string.suggestions));
                     if (getPlayerTweaksData().isSuggestionsHorizontallyScrolled()) {
                         videoGroup.setId(videoGroup.getTitle().hashCode()); // merge by the id
                     }
+                } else if (groupIndex == 0 && video.isPlayingSongMix() && video.playlistInfo.getTitle() != null
+                        && video.playlistInfo.getTitle().equals(videoGroup.getTitle())) {
+                    // The mix row is titled after the seed song, the website shows "Mix - <song>"
+                    videoGroup.setTitle(getContext().getString(R.string.mix_title, videoGroup.getTitle()));
                 }
 
                 getPlayer().updateSuggestions(videoGroup);

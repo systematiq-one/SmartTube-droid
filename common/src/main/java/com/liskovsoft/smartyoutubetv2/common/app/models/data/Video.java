@@ -35,6 +35,7 @@ import java.util.List;
  */
 public final class Video {
     public static final String PLAYLIST_LIKED_MUSIC = "LM";
+    private static final String MIX_PLAYLIST_PREFIX = "RD";
     public static final String TERTIARY_TEXT_DELIM = "•";
     public static final long MAX_LIVE_DURATION_MS = 24 * 60 * 60 * 1_000;
     public static final float MIN_WATCHED_PERCENT = 10; // min value for immediately closed videos
@@ -558,6 +559,27 @@ public final class Video {
                 (durationMs <= 0 || isSynced) && (hasPlaylist() || hasChannel() || hasNestedItems());
     }
 
+    /**
+     * YouTube's "Mix - &lt;song&gt;" playlist, the queue the website builds when a song is played on its own
+     */
+    public static String createMixPlaylistId(String videoId) {
+        return videoId != null ? MIX_PLAYLIST_PREFIX + videoId : null;
+    }
+
+    /**
+     * Any YouTube generated mix (song mix, My Mix, album radio etc.)
+     */
+    public boolean isPlayingYouTubeMix() {
+        return playlistInfo != null && Helpers.startsWith(playlistInfo.getPlaylistId(), MIX_PLAYLIST_PREFIX);
+    }
+
+    /**
+     * A mix seeded by a single song: "RD" + 11 chars video id
+     */
+    public boolean isPlayingSongMix() {
+        return isPlayingYouTubeMix() && playlistInfo.getPlaylistId().length() == MIX_PLAYLIST_PREFIX.length() + 11;
+    }
+
     public boolean isFullLive() {
         return isLive && startSegmentNum == 0;
     }
@@ -950,7 +972,8 @@ public final class Video {
     public boolean isSectionPlaylistEnabled(Context context) {
         return PlayerTweaksData.instance(context).isSectionPlaylistEnabled() && !belongsToSuggestions() && !belongsToPlaybackQueue()
                 && (!checkAllVideosHasPlaylist() || nextMediaItem == null || !isMix()) // skip hidden playlists (music videos usually)
-                && (!isRemote || remotePlaylistId == null);
+                && (!isRemote || remotePlaylistId == null)
+                && !isPlayingYouTubeMix(); // the mix is the real queue (songs), don't replace it with the browse row
     }
 
     public String createPlaylistTitle() {

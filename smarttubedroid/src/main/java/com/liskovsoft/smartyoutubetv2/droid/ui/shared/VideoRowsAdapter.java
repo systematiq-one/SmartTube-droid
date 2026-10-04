@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 
@@ -25,6 +26,7 @@ import java.util.List;
  * Row layout: {@code shared_video_row.xml}.
  */
 public class VideoRowsAdapter extends RecyclerView.Adapter<VideoRowsAdapter.RowHolder> {
+    private static final Object PAYLOAD_SCROLL = new Object();
     private final VideoGroupAdapter.Listener mListener;
     private final List<RowEntry> mRows = new ArrayList<>();
     // Card views are identical across rows: share one pool between all inner lists
@@ -106,6 +108,28 @@ public class VideoRowsAdapter extends RecyclerView.Adapter<VideoRowsAdapter.RowH
         }
     }
 
+    /**
+     * Scrolls the row so the video becomes its first card. The cards before it stay in the row,
+     * reachable by scrolling back (e.g. already played songs of a mix).
+     */
+    public void scrollToVideo(int groupId, Video video) {
+        RowEntry entry = findRow(groupId);
+
+        if (entry == null) {
+            return;
+        }
+
+        int index = entry.adapter.indexOf(video);
+
+        if (index < 0) {
+            return;
+        }
+
+        entry.scrollState = null;
+        entry.pendingScrollPosition = index;
+        notifyItemChanged(mRows.indexOf(entry), PAYLOAD_SCROLL); // payload: rebind in place, no crossfade
+    }
+
     public void clear() {
         int rowCount = mRows.size();
         mRows.clear();
@@ -155,12 +179,34 @@ public class VideoRowsAdapter extends RecyclerView.Adapter<VideoRowsAdapter.RowH
 
         RecyclerView.LayoutManager layoutManager = holder.mList.getLayoutManager();
         if (layoutManager != null) {
-            if (entry.scrollState != null) {
+            if (entry.pendingScrollPosition >= 0) {
+                applyPendingScroll(holder, entry);
+            } else if (entry.scrollState != null) {
                 layoutManager.onRestoreInstanceState(entry.scrollState);
             } else {
                 layoutManager.scrollToPosition(0);
             }
         }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RowHolder holder, int position, @NonNull List<Object> payloads) {
+        RowEntry entry = mRows.get(position);
+
+        if (payloads.contains(PAYLOAD_SCROLL) && holder.mEntry == entry && holder.mList.getAdapter() == entry.adapter) {
+            applyPendingScroll(holder, entry);
+        } else {
+            onBindViewHolder(holder, position);
+        }
+    }
+
+    private static void applyPendingScroll(RowHolder holder, RowEntry entry) {
+        if (entry.pendingScrollPosition < 0 || !(holder.mList.getLayoutManager() instanceof LinearLayoutManager)) {
+            return;
+        }
+
+        ((LinearLayoutManager) holder.mList.getLayoutManager()).scrollToPositionWithOffset(entry.pendingScrollPosition, 0);
+        entry.pendingScrollPosition = -1;
     }
 
     @Override
@@ -211,6 +257,7 @@ public class VideoRowsAdapter extends RecyclerView.Adapter<VideoRowsAdapter.RowH
         private String title;
         private final VideoGroupAdapter adapter;
         private Parcelable scrollState;
+        private int pendingScrollPosition = -1;
 
         RowEntry(int groupId, String title, VideoGroupAdapter adapter) {
             this.groupId = groupId;

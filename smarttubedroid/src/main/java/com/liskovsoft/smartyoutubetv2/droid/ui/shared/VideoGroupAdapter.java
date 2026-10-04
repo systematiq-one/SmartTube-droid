@@ -137,6 +137,23 @@ public class VideoGroupAdapter extends RecyclerView.Adapter<VideoCardHolder> {
         return mVideoItems.isEmpty() ? null : mVideoItems.get(mVideoItems.size() - 1);
     }
 
+    /**
+     * Position of the card with the same video id, -1 if absent.
+     */
+    public int indexOf(Video video) {
+        if (video == null || video.videoId == null) {
+            return -1;
+        }
+
+        for (int i = 0; i < mVideoItems.size(); i++) {
+            if (Helpers.equals(video.videoId, mVideoItems.get(i).videoId)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     private void append(VideoGroup group) {
         List<Video> videos = extractVideos(group);
 

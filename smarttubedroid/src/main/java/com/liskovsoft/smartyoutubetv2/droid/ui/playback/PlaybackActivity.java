@@ -1802,7 +1802,13 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     @Override
     public void focusSuggestedItem(Video video) {
-        // TV-only (see above).
+        // Phone take on the TV card focus: the current video (e.g. the playing song of a mix) becomes
+        // the first card of its row, the earlier ones stay reachable to the left.
+        if (mSuggestionsAdapter == null || video == null || video.getGroup() == null) {
+            return;
+        }
+
+        mSuggestionsAdapter.scrollToVideo(video.getGroup().getId(), video);
     }
 
     @Override
