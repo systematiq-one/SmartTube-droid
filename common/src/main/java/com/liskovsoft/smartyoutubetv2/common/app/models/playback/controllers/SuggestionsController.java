@@ -341,10 +341,15 @@ public class SuggestionsController extends BasePlayerController {
         if (next != null) {
             next.fromQueue = true;
             result = next;
+        } else if (!getVideo().isShuffled && getNextMixVideo(getVideo()) != null) {
+            // Before the RD check below: YouTube's own next item can point back to the seed song
+            result = getNextMixVideo(getVideo());
+        } else if (!getVideo().isShuffled &&
+                Helpers.startsWith(getVideo().getPlaylistId(), "RD") &&
+                getVideo().hasNextPlaylist()) {
+            result = Video.from(getVideo().nextMediaItem);
         } else if (mNextSectionVideo != null && !getVideo().isShuffled) {
             result = mNextSectionVideo;
-        } else if (!getVideo().isShuffled && getNextMixVideo(getVideo()) != null) {
-            result = getNextMixVideo(getVideo());
         } else if (getVideo().nextMediaItem != null) {
             result = Video.from(getVideo().nextMediaItem);
         }
