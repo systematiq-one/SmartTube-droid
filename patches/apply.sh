@@ -52,4 +52,6 @@ apply() {
 # Upstream 32.59 made innertube the primary format-info provider. Those streams are
 # SABR, and their caption urls answer with an empty body, so subtitles never decode.
 # Puts the legacy provider back in front, with innertube still used as the fallback.
-apply MediaServiceCore mediaservicecore-legacy-format-info-first.patch
+# Disabled: MediaServiceCore 7c2451ea went legacy-first upstream (mTryInnertubeFirst = false),
+# so the patch no longer applies. Kept in case upstream flips the order back.
+# apply MediaServiceCore mediaservicecore-legacy-format-info-first.patch
