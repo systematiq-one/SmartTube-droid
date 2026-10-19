@@ -224,10 +224,11 @@ public class ScreenOffPlaybackService extends Service {
             }
         }
 
-        // The launcher intent brings the existing task (with the player on top) to the front
-        Intent launch = getPackageManager().getLaunchIntentForPackage(getPackageName());
-        PendingIntent contentIntent = launch != null ? PendingIntent.getActivity(this, 0, launch,
-                PendingIntent.FLAG_UPDATE_CURRENT | (VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0)) : null;
+        // The player runs in a task of its own (see the manifest): bring that task back, not the
+        // browse task the launcher intent would resume
+        Intent launch = new Intent(this, PlaybackActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, launch,
+                PendingIntent.FLAG_UPDATE_CURRENT | (VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
 
         androidx.media.app.NotificationCompat.MediaStyle style = new androidx.media.app.NotificationCompat.MediaStyle();
         if (sSessionToken != null) {

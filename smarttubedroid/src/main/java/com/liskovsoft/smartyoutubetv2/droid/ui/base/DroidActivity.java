@@ -1,5 +1,6 @@
 package com.liskovsoft.smartyoutubetv2.droid.ui.base;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.WindowInsetsController;
 
 import androidx.annotation.RequiresApi;
 
+import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
 
 /**
@@ -31,6 +33,30 @@ public abstract class DroidActivity extends MotherActivity {
         // MotherActivity hides every system bar on each resume (fullscreen mode is on by
         // default), so the portrait override has to run after it
         applySystemBars();
+    }
+
+    /**
+     * BACK. The player and the dialogs run in tasks of their own (see the manifest), so Android's
+     * back stack can't return to the video from a screen opened in the player, e.g. a channel.
+     * Go through ViewManager's record of the opened screens instead, as TV's LeanbackActivity does.<br/>
+     * BACK on the first screen while the sound plays in the background goes to the home screen and
+     * leaves the app as it is: finishing would just uncover the player's task behind it.
+     */
+    @Override
+    public void finish() {
+        if (isBackPressed()) {
+            if (getViewManager().hasParentView(this)) {
+                getViewManager().startParentView(this);
+            } else if (PlaybackPresenter.instance(this).isRunningInBackground()) {
+                resetBackState();
+                startActivity(new Intent(Intent.ACTION_MAIN)
+                        .addCategory(Intent.CATEGORY_HOME)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return;
+            }
+        }
+
+        super.finish();
     }
 
     @Override

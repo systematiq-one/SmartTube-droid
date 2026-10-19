@@ -121,8 +121,13 @@
 
         <!-- configChanges: the presenter drops its pending categories once consumed, so a
              recreate on rotation would close the open dialog instead of restoring it -->
+        <!-- Own task (like TV's singleInstance): ViewManager starts views with NEW_TASK, which
+             would put the dialog into the browse task and bring that task, with its opaque browse
+             screen, in front of the player's task - the player then stops and is released. In a
+             task of its own the translucent dialog leaves the player visible behind it -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.dialogs.AppDialogActivity"
+            android:taskAffinity="${applicationId}.dialog"
             android:exported="false"
             android:noHistory="true"
             android:excludeFromRecents="true"

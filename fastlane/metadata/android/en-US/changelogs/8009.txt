@@ -1,0 +1,4 @@
+* Fixed: changing the video quality (or any other player setting) closed the video
+* Fixed: going back from a channel you opened from a video now returns to the video
+* Pressing back on the main screen while listening in the background now goes to the home screen and keeps the sound playing
+* Tapping the playback notification now opens the video
