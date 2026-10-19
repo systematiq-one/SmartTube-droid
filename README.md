@@ -2,13 +2,10 @@
 
 # SmartTube Droid
 
-**Watch YouTube on your Android phone with no ads.** Free and open source.
+**Watch videos on your Android phone with no ads.** Free and open source.
 
 It is the phone version of [SmartTube](https://github.com/yuliskov/SmartTube), the popular
 ad-free app for Android TV, with an interface made for touchscreens.
-
-> ⚠️ The app is young. It works, but expect some bugs, and please
-> [report them](https://github.com/systematiq-one/SmartTube-droid/issues).
 
 ## What you get
 
@@ -20,7 +17,7 @@ ad-free app for Android TV, with an interface made for touchscreens.
   hold for 2× speed
 - Sign in to see your subscriptions, playlists and history
 - Light and dark theme, following your phone
-- No Google services needed, no tracking
+- No proprietary services needed, no tracking
 
 ## Install
 
@@ -70,7 +67,7 @@ cd SmartTube-droid
 ```
 
 The phone interface lives in `smarttubedroid`. Everything else (playback, ad and sponsor
-skipping, the YouTube connection) comes from SmartTube and is kept in sync with it.
+skipping, the video service connection) comes from SmartTube and is kept in sync with it.
 Pushing a `v*` tag builds and publishes a release; its "What's new" text comes from
 `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt`.
 
@@ -79,5 +76,5 @@ Pushing a `v*` tag builds and publishes a release; its "What's new" text comes f
 Built on [**SmartTube** by Yuri Liskov](https://github.com/yuliskov/SmartTube), who wrote
 nearly all of the hard parts. MIT licence, like the original.
 
-This is an unofficial app, not affiliated with YouTube or Google. It is provided as is,
+This is an unofficial app, not affiliated with any video platform. It is provided as is,
 without warranty.
