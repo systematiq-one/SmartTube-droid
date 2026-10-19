@@ -9,12 +9,16 @@
     <color name="playback_control_dim">#B3FFFFFF</color>
     <!-- Controls overlay scrim -->
     <color name="playback_scrim">#99000000</color>
-    <!-- Portrait metadata panel background -->
-    <color name="playback_panel_bg">#FF0F0F0F</color>
+    <!-- Portrait metadata panel (below the video): follows the phone theme, dark values in values-night -->
+    <color name="playback_panel_bg">#FFFFFFFF</color>
+    <color name="playback_panel_text">#FF0F0F0F</color>
+    <color name="playback_panel_text_dim">#99000000</color>
     <!-- Thin divider inside the portrait panel -->
-    <color name="playback_divider">#22FFFFFF</color>
+    <color name="playback_divider">#1F000000</color>
     <!-- Unplayed part of the seek bar -->
     <color name="playback_seek_track">#4DFFFFFF</color>
     <!-- Buffered part of the seek bar -->
     <color name="playback_seek_buffer">#80FFFFFF</color>
+    <!-- Dark navigation bar icons over the light panel -->
+    <bool name="playback_light_panel">true</bool>
 </resources>

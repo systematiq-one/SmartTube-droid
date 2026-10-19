@@ -19,4 +19,8 @@
     <string name="playback_description">Description</string>
     <string name="playback_details_close">Close</string>
     <string name="playback_comment_replies">%1$s replies</string>
+    <string name="background_listening">Listen in background</string>
+    <string name="background_listening_on">Sound keeps playing when you leave the video or lock the phone</string>
+    <string name="background_listening_off">Sound stops when you leave the video or lock the phone</string>
+    <string name="screen_off_playback_channel">Playback</string>
 </resources>

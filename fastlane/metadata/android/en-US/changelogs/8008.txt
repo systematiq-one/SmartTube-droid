@@ -1,0 +1,5 @@
+* Added a "Listen in background" button: the sound keeps playing when you leave the video or lock your phone
+* The video page now follows your phone's light or dark theme
+* The subtitles button now picks the auto-generated subtitles in the video's own language, or English, instead of a random dubbed language
+* Moved the "more" button next to Subscribe
+* Smoother playback: fewer stalls and faster recovery from streaming errors (SmartTube 32.68)

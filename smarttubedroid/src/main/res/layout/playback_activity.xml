@@ -127,7 +127,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="12dp"
             android:paddingRight="12dp"
-            android:textColor="@color/playback_control"
+            android:textColor="@color/playback_panel_text"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -142,7 +142,7 @@
             android:paddingTop="2dp"
             android:paddingEnd="12dp"
             android:paddingRight="12dp"
-            android:textColor="@color/playback_control_dim"
+            android:textColor="@color/playback_panel_text_dim"
             android:textSize="12sp" />
 
         <LinearLayout
@@ -176,7 +176,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/playback_control"
+                android:textColor="@color/playback_panel_text"
                 android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -192,8 +192,25 @@
                 android:paddingEnd="12dp"
                 android:paddingRight="12dp"
                 android:text="@string/action_subscribe"
-                android:textColor="@color/playback_control"
+                android:textColor="@color/playback_panel_text"
                 android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/playback_chip_more"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="44dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:contentDescription="@string/playback_more"
+                app:icon="@drawable/playback_ic_more"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="20dp"
+                app:iconTint="@color/playback_panel_text" />
         </LinearLayout>
 
         <HorizontalScrollView
@@ -228,7 +245,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_dislike"
@@ -247,7 +264,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_share"
@@ -266,7 +283,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_quality"
@@ -285,7 +302,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_speed"
@@ -304,7 +321,7 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_playlist"
@@ -323,10 +340,10 @@
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/playback_chip_more"
+                    android:id="@+id/playback_chip_background"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                     android:layout_width="48dp"
                     android:layout_height="36dp"
@@ -337,12 +354,12 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:minWidth="0dp"
-                    android:contentDescription="@string/playback_more"
-                    app:icon="@drawable/playback_ic_more"
+                    android:contentDescription="@string/background_listening"
+                    app:icon="@drawable/playback_ic_headphones"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="20dp"
-                    app:iconTint="@color/playback_control" />
+                    app:iconTint="@color/playback_panel_text" />
             </LinearLayout>
         </HorizontalScrollView>
 
@@ -375,7 +392,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="@color/playback_control_dim"
+                android:textColor="@color/playback_panel_text_dim"
                 android:textSize="13sp" />
 
             <ImageView
@@ -415,7 +432,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/playback_comments"
-                android:textColor="@color/playback_control"
+                android:textColor="@color/playback_panel_text"
                 android:textSize="14sp" />
 
             <ImageView
@@ -481,7 +498,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="@color/playback_control"
+                android:textColor="@color/playback_panel_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -517,8 +534,8 @@
                     android:layout_height="wrap_content"
                     android:autoLink="web"
                     android:padding="12dp"
-                    android:textColor="@color/playback_control_dim"
-                    android:textColorLink="@color/playback_control"
+                    android:textColor="@color/playback_panel_text_dim"
+                    android:textColorLink="@color/playback_panel_text"
                     android:textSize="14sp" />
             </ScrollView>
 
@@ -538,7 +555,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="24dp"
-                android:textColor="@color/playback_control_dim"
+                android:textColor="@color/playback_panel_text_dim"
                 android:textSize="14sp"
                 android:visibility="gone" />
 

@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/playback_control_dim"
+            android:textColor="@color/playback_panel_text_dim"
             android:textSize="12sp" />
 
         <TextView
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="@color/playback_control"
+            android:textColor="@color/playback_panel_text"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
-                android:textColor="@color/playback_control_dim"
+                android:textColor="@color/playback_panel_text_dim"
                 android:textSize="12sp" />
 
             <TextView
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
-                android:textColor="@color/playback_control"
+                android:textColor="@color/playback_panel_text"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>

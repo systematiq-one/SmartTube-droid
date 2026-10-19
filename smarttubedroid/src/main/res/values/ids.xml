@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Player menu item that isn't one of common's actions -->
+    <item name="action_screen_off_playback" type="id" />
+</resources>

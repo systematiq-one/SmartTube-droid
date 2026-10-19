@@ -131,6 +131,42 @@ jobs:
         if: always()
         run: rm -f keystore.properties "$RUNNER_TEMP/release.keystore"
 
+      # "What's new" comes from the F-Droid style changelog of this versionCode, when there is one:
+      # fastlane/metadata/android/en-US/changelogs/<versionCode>.txt (0.8.8 -> 8008.txt).
+      # Obtainium and the GitHub release page show this text when an update arrives.
+      - name: Write the release notes
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+          CODE: ${{ steps.version.outputs.code }}
+        run: |
+          CHANGELOG="fastlane/metadata/android/en-US/changelogs/$CODE.txt"
+          NOTES="$RUNNER_TEMP/release-notes.md"
+          : > "$NOTES"
+
+          if [ -f "$CHANGELOG" ]; then
+            printf '## What'"'"'s new\n\n' >> "$NOTES"
+            cat "$CHANGELOG" >> "$NOTES"
+            printf '\n\n' >> "$NOTES"
+          else
+            echo "::warning::No $CHANGELOG, the release has no 'What's new' section"
+          fi
+
+          cat <<'EOF' | sed "s/@NAME@/$NAME/g" >> "$NOTES"
+          ## Install
+
+          Download **`SmartTubeDroid_@NAME@_r_arm64-v8a.apk`** for any
+          phone from roughly 2016 onward. If it will not install, use the `universal` build.
+
+          Open the file on your phone and allow installing from unknown sources when asked.
+          Requires Android 5.0 or newer.
+
+          To get updates automatically, add this repository to
+          [Obtainium](https://github.com/ImranR98/Obtainium).
+
+          > Updating from an earlier build signed with a different key? Uninstall the old app
+          > first — Android blocks updates when the signature changes.
+          EOF
+
       - name: Publish the release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
@@ -139,20 +175,7 @@ jobs:
           draft: ${{ github.event_name == 'workflow_dispatch' }}
           generate_release_notes: true
           files: smarttubedroid/build/outputs/apk/release/*.apk
-          body: |
-            ## Install
-
-            Download **`SmartTubeDroid_${{ steps.version.outputs.name }}_r_arm64-v8a.apk`** for any
-            phone from roughly 2016 onward. If it will not install, use the `universal` build.
-
-            Open the file on your phone and allow installing from unknown sources when asked.
-            Requires Android 5.0 or newer.
-
-            To get updates automatically, add this repository to
-            [Obtainium](https://github.com/ImranR98/Obtainium).
-
-            > Updating from an earlier build signed with a different key? Uninstall the old app
-            > first — Android blocks updates when the signature changes.
+          body_path: ${{ runner.temp }}/release-notes.md
 
       - name: Upload APKs as build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

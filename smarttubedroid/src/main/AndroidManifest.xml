@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Play with screen off: media playback foreground service, CPU and Wi-Fi kept awake -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- tools:node="replace" is required: library manifests pulled in via :common declare
          leanback as required=true, and the merger resolves conflicts in favour of true,
@@ -102,10 +105,13 @@
             android:launchMode="singleTask"
             android:exported="false" />
 
-        <!-- Rotation must NOT recreate the player (video keeps playing) -->
+        <!-- Rotation must NOT recreate the player (video keeps playing).
+             Own task (like TV's singleInstance): BACK with background sound reopens the singleTask
+             BrowseActivity, which would otherwise clear the player sitting above it and stop the sound -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.playback.PlaybackActivity"
             android:launchMode="singleTask"
+            android:taskAffinity="${applicationId}.player"
             android:exported="false"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|layoutDirection"
             android:supportsPictureInPicture="true"
@@ -162,6 +168,10 @@
             android:name="com.liskovsoft.leanbackassistant.search.VideoContentProvider"
             android:authorities="${applicationId}.leanbackassistant"
             tools:node="remove" />
+        <service
+            android:name="com.liskovsoft.smartyoutubetv2.droid.ui.playback.ScreenOffPlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
 </manifest>
