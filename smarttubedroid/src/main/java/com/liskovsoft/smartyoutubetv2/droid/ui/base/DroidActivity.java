@@ -1,5 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.droid.ui.base;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
@@ -21,6 +23,13 @@ public abstract class DroidActivity extends MotherActivity {
     // NOTE: the screensaver is turned off app wide in DroidApplication. A per-activity
     // setBlocked(true) doesn't hold: BasePresenter.enableScreenOffIfNeeded() clears it.
 
+    /** The main task: shown in Recents */
+    protected static final int RECENTS_MAIN = 0;
+    /** The player: while it's in front, the only entry of the app in Recents */
+    protected static final int RECENTS_SOLE = 1;
+    /** Left as the manifest sets it (the dialogs are excluded there) */
+    protected static final int RECENTS_IGNORE = 2;
+
     private boolean mInsetsHooked;
 
     @Override
@@ -33,6 +42,53 @@ public abstract class DroidActivity extends MotherActivity {
         // MotherActivity hides every system bar on each resume (fullscreen mode is on by
         // default), so the portrait override has to run after it
         applySystemBars();
+
+        updateRecentsEntries();
+    }
+
+    /**
+     * How this screen's task shows in Recents, see {@link #updateRecentsEntries()}.
+     */
+    protected int getRecentsMode() {
+        return RECENTS_MAIN;
+    }
+
+    /**
+     * One app, one Recents entry. The player runs in a task of its own (see the manifest), so while
+     * it's in front the main task behind it is hidden from Recents, and any screen of the main task
+     * shows it again. (The player's own task leaves Recents once it finishes: autoRemoveFromRecents.)
+     */
+    private void updateRecentsEntries() {
+        int mode = getRecentsMode();
+
+        if (mode == RECENTS_IGNORE) {
+            return;
+        }
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (manager == null) {
+            return;
+        }
+
+        try {
+            for (ActivityManager.AppTask task : manager.getAppTasks()) {
+                boolean isOwnTask = getTaskId(task.getTaskInfo()) == getTaskId();
+
+                if (mode == RECENTS_SOLE && !isOwnTask) {
+                    task.setExcludeFromRecents(true);
+                } else if (mode == RECENTS_MAIN && isOwnTask) {
+                    task.setExcludeFromRecents(false);
+                }
+            }
+        } catch (IllegalArgumentException | SecurityException e) {
+            // A task went away meanwhile
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static int getTaskId(ActivityManager.RecentTaskInfo info) {
+        return VERSION.SDK_INT >= 29 ? info.taskId : info.persistentId;
     }
 
     /**

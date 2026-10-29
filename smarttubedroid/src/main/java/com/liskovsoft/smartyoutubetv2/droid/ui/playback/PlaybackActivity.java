@@ -1495,6 +1495,14 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     }
 
     /**
+     * While the player is in front, Recents shows the app once: the main task behind it is hidden.
+     */
+    @Override
+    protected int getRecentsMode() {
+        return RECENTS_SOLE;
+    }
+
+    /**
      * Force finish (PIP, app exit etc).
      */
     @Override

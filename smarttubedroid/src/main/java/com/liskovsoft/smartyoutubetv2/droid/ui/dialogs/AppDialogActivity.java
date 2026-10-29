@@ -47,6 +47,14 @@ public class AppDialogActivity extends DroidActivity {
     }
 
     /**
+     * The dialogs have their own task, excluded from Recents in the manifest.
+     */
+    @Override
+    protected int getRecentsMode() {
+        return RECENTS_IGNORE;
+    }
+
+    /**
      * TV contract (see TV's AppDialogActivity.finish): every finish path funnels here.
      * System back pops one screen while a back stack exists; the final close notifies
      * the presenter ({@code AppDialogPresenter.onFinish()} — this is what runs the

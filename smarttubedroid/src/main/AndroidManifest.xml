@@ -109,11 +109,14 @@
 
         <!-- Rotation must NOT recreate the player (video keeps playing).
              Own task (like TV's singleInstance): BACK with background sound reopens the singleTask
-             BrowseActivity, which would otherwise clear the player sitting above it and stop the sound -->
+             BrowseActivity, which would otherwise clear the player sitting above it and stop the sound.
+             autoRemoveFromRecents: once the player finishes, its emptied task must not linger in Recents
+             as a second SmartTube entry (reopening it gave a blank player) -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.playback.PlaybackActivity"
             android:launchMode="singleTask"
             android:taskAffinity="${applicationId}.player"
+            android:autoRemoveFromRecents="true"
             android:exported="false"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboardHidden|layoutDirection"
             android:supportsPictureInPicture="true"
