@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tonal palette (Material 3 style surfaces derived from the brand red).
+     Light values here, dark values in values-night. Screens alias these instead of using raw colors. -->
+<resources>
+    <!-- Screen background -->
+    <color name="shared_surface">#FFFFF8F7</color>
+    <!-- Cards (description, comments) -->
+    <color name="shared_surface_container">#FFFCEEEB</color>
+    <!-- Pills, chips, round icon buttons -->
+    <color name="shared_surface_container_high">#FFF5E2DF</color>
+    <color name="shared_on_surface">#FF231918</color>
+    <color name="shared_on_surface_variant">#FF534341</color>
+    <!-- Hairlines and unselected chip borders -->
+    <color name="shared_outline">#FFD8C2BF</color>
+    <!-- Toggled-on pills and the selected section chip -->
+    <color name="shared_active_container">#FFFFDAD5</color>
+    <color name="shared_on_active_container">#FF410002</color>
+    <!-- The one filled red element on a screen (Subscribe) -->
+    <color name="shared_primary">#FFC62828</color>
+    <color name="shared_on_primary">#FFFFFFFF</color>
+</resources>

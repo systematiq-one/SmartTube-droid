@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Section tabs drawn as chips: tonal fill when selected, outlined otherwise.
+     No insets here (an inset drawable's padding replaces the tab's own): the gaps between
+     chips are tab margins set in BrowseActivity.applyChipStyle() -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/shared_active_container" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <stroke android:width="1dp" android:color="@color/shared_outline" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</selector>

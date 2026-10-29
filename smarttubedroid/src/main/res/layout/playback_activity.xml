@@ -121,15 +121,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:lineSpacingExtra="2sp"
             android:maxLines="2"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
             android:textColor="@color/playback_panel_text"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/playback_second_title"
@@ -137,13 +138,13 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
             android:textColor="@color/playback_panel_text_dim"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
 
         <LinearLayout
             android:id="@+id/playback_channel_row"
@@ -152,17 +153,17 @@
             android:background="?android:attr/selectableItemBackground"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="12dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="10dp">
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="12dp">
 
             <ImageView
                 android:id="@+id/playback_channel_icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/playback_channel_placeholder"
                 android:contentDescription="@null"
                 android:scaleType="centerCrop" />
@@ -171,55 +172,38 @@
                 android:id="@+id/playback_channel_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginLeft="12dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:textColor="@color/playback_panel_text"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/playback_chip_subscribe"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:minWidth="0dp"
-                android:paddingStart="12dp"
-                android:paddingLeft="12dp"
-                android:paddingEnd="12dp"
-                android:paddingRight="12dp"
-                android:text="@string/action_subscribe"
-                android:textColor="@color/playback_panel_text"
-                android:textSize="12sp" />
+                style="@style/Widget.SmartTubeDroid.Pill.Primary"
+                android:text="@string/action_subscribe" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/playback_chip_more"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                android:layout_width="44dp"
-                android:layout_height="36dp"
+                style="@style/Widget.SmartTubeDroid.Pill.Icon"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:minWidth="0dp"
                 android:contentDescription="@string/playback_more"
-                app:icon="@drawable/playback_ic_more"
-                app:iconGravity="textStart"
-                app:iconPadding="0dp"
-                app:iconSize="20dp"
-                app:iconTint="@color/playback_panel_text" />
+                app:icon="@drawable/playback_ic_more" />
         </LinearLayout>
 
+        <!-- Labelled tonal pills. Toggled-on ones switch to the active container in code -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
             android:scrollbars="none">
 
             <LinearLayout
@@ -228,161 +212,109 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/playback_chip_like"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:contentDescription="@string/action_like"
-                    app:icon="@drawable/playback_ic_like"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                <LinearLayout
+                    android:id="@+id/playback_chip_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/playback_pill_group_bg"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/playback_chip_dislike"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
-                    android:contentDescription="@string/action_dislike"
-                    app:icon="@drawable/playback_ic_dislike"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/playback_chip_like"
+                        style="@style/Widget.SmartTubeDroid.Pill.Half"
+                        android:paddingEnd="12dp"
+                        android:paddingRight="12dp"
+                        android:contentDescription="@string/action_like"
+                        app:icon="@drawable/playback_ic_like" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="22dp"
+                        android:background="@color/playback_divider" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/playback_chip_dislike"
+                        style="@style/Widget.SmartTubeDroid.Pill.Half"
+                        android:paddingStart="12dp"
+                        android:paddingLeft="12dp"
+                        android:paddingEnd="14dp"
+                        android:paddingRight="14dp"
+                        android:contentDescription="@string/action_dislike"
+                        app:icon="@drawable/playback_ic_dislike"
+                        app:iconPadding="0dp" />
+                </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_share"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:contentDescription="@string/share_link"
-                    app:icon="@drawable/playback_ic_share"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    android:text="@string/playback_chip_share"
+                    app:icon="@drawable/playback_ic_share" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_quality"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:contentDescription="@string/playback_quality"
-                    app:icon="@drawable/playback_ic_hd"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    android:text="@string/playback_quality"
+                    app:icon="@drawable/playback_ic_hd" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_speed"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:contentDescription="@string/action_video_speed"
-                    app:icon="@drawable/playback_ic_speed"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    android:text="@string/playback_chip_speed"
+                    app:icon="@drawable/playback_ic_speed" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_playlist"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:contentDescription="@string/action_playlist_add"
-                    app:icon="@drawable/playback_ic_bookmark"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    android:text="@string/playback_chip_save"
+                    app:icon="@drawable/playback_ic_bookmark" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/playback_chip_background"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minWidth="0dp"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
                     android:contentDescription="@string/background_listening"
-                    app:icon="@drawable/playback_ic_headphones"
-                    app:iconGravity="textStart"
-                    app:iconPadding="0dp"
-                    app:iconSize="20dp"
-                    app:iconTint="@color/playback_panel_text" />
+                    android:text="@string/playback_chip_listen"
+                    app:icon="@drawable/playback_ic_headphones" />
             </LinearLayout>
         </HorizontalScrollView>
 
+        <!-- Spacer: the tonal cards below carry their own margins -->
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/playback_divider" />
+            android:layout_height="12dp" />
 
         <!-- Collapsed description teaser. Tapping it opens playback_details_sheet. -->
         <LinearLayout
             android:id="@+id/playback_description_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/playback_card_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="10dp"
+            android:paddingStart="14dp"
+            android:paddingLeft="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="12dp"
             android:visibility="gone">
 
             <TextView
@@ -391,9 +323,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
+                android:lineSpacingExtra="2sp"
                 android:maxLines="2"
-                android:textColor="@color/playback_panel_text_dim"
-                android:textSize="13sp" />
+                android:textColor="@color/playback_panel_text"
+                android:textSize="14sp" />
 
             <ImageView
                 android:layout_width="20dp"
@@ -404,11 +337,11 @@
                 android:src="@drawable/playback_ic_expand" />
         </LinearLayout>
 
+        <!-- Gap between the cards (shown together with the description card) -->
         <View
             android:id="@+id/playback_description_divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/playback_divider"
+            android:layout_height="8dp"
             android:visibility="gone" />
 
         <!-- Collapsed comments row. Comments load only once this is tapped. -->
@@ -416,21 +349,26 @@
             android:id="@+id/playback_comments_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/playback_card_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:paddingTop="12dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="12dp"
+            android:paddingStart="14dp"
+            android:paddingLeft="14dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="14dp"
             android:visibility="gone">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="sans-serif-medium"
                 android:text="@string/playback_comments"
                 android:textColor="@color/playback_panel_text"
                 android:textSize="14sp" />
@@ -444,11 +382,11 @@
                 android:src="@drawable/playback_ic_expand" />
         </LinearLayout>
 
+        <!-- Gap above the suggestions (shown together with the comments card) -->
         <View
             android:id="@+id/playback_comments_divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/playback_divider"
+            android:layout_height="8dp"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView

@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Playback screen colors (playback_ prefix per module resource-naming contract) -->
 <resources>
-    <!-- Accent for toggled-ON player buttons (matches app brand red) -->
-    <color name="playback_accent">#FFFF0000</color>
+    <!-- Accent for toggled-ON buttons over the video (tonal brand red, readable on dark) -->
+    <color name="playback_accent">#FFFF5449</color>
     <!-- Default player control tint -->
     <color name="playback_control">#FFFFFFFF</color>
     <!-- Secondary/dimmed control + text tint -->
     <color name="playback_control_dim">#B3FFFFFF</color>
     <!-- Controls overlay scrim -->
     <color name="playback_scrim">#99000000</color>
-    <!-- Portrait metadata panel (below the video): follows the phone theme, dark values in values-night -->
-    <color name="playback_panel_bg">#FFFFFFFF</color>
-    <color name="playback_panel_text">#FF0F0F0F</color>
-    <color name="playback_panel_text_dim">#99000000</color>
+    <!-- Portrait metadata panel (below the video): follows the phone theme through the tonal palette -->
+    <color name="playback_panel_bg">@color/shared_surface</color>
+    <color name="playback_panel_text">@color/shared_on_surface</color>
+    <color name="playback_panel_text_dim">@color/shared_on_surface_variant</color>
     <!-- Thin divider inside the portrait panel -->
-    <color name="playback_divider">#1F000000</color>
+    <color name="playback_divider">@color/shared_outline</color>
+    <!-- Round dark discs behind the previous/next buttons over the video -->
+    <color name="playback_disc">#99141213</color>
+    <!-- White disc behind play/pause and the icon on it -->
+    <color name="playback_disc_primary">#F2FFFFFF</color>
+    <color name="playback_on_disc_primary">#FF141213</color>
     <!-- Unplayed part of the seek bar -->
     <color name="playback_seek_track">#4DFFFFFF</color>
     <!-- Buffered part of the seek bar -->

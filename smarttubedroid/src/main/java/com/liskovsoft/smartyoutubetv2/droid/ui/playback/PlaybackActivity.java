@@ -1957,16 +1957,27 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     // ------------------------------------------------- PlayerView (engine)
 
     /**
-     * Quality label produced by the engine (e.g. "1080p 60fps avc"). The chips are icon-only,
-     * so it becomes the chip's tooltip/description rather than a visible label.
+     * Quality label produced by the engine (e.g. "1080/30/AV1/1.15x"). The pill shows just the
+     * resolution ("1080p"); the full label becomes its tooltip/description.
      */
     @Override
     public void setQualityInfo(String info) {
         if (mQualityChip != null) {
             CharSequence label = TextUtils.isEmpty(info) ? getString(R.string.playback_quality) : info;
             mQualityChip.setContentDescription(label);
+            mQualityChip.setText(getShortQualityLabel(info));
             TooltipCompat.setTooltipText(mQualityChip, label);
         }
+    }
+
+    private String getShortQualityLabel(String info) {
+        String resolution = TextUtils.isEmpty(info) ? "" : info.split("[/ ]", 2)[0];
+
+        if (resolution.matches("\\d+")) {
+            return resolution + "p";
+        }
+
+        return TextUtils.isEmpty(resolution) ? getString(R.string.playback_quality) : resolution;
     }
 
     // ------------------------------------------------------------ PlayerUI
@@ -2191,6 +2202,11 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         view.setEnabled(true);
         view.setAlpha(1f);
 
+        if (view instanceof MaterialButton && isInPanel(view)) {
+            applyPillStyle((MaterialButton) view, buttonState != BUTTON_OFF);
+            return;
+        }
+
         int offColor = isInPanel(view) ? R.color.playback_panel_text : R.color.playback_control;
         int color = androidx.core.content.ContextCompat.getColor(this,
                 buttonState == BUTTON_OFF ? offColor : R.color.playback_accent);
@@ -2202,6 +2218,32 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         } else if (view instanceof ImageView) {
             ((ImageView) view).setColorFilter(color);
         }
+    }
+
+    /**
+     * Tonal pills under the video: ON switches the pill to the active container instead of
+     * tinting the icon. Subscribe is the inverse: filled red until subscribed, then tonal.
+     */
+    private void applyPillStyle(MaterialButton button, boolean isOn) {
+        int background;
+        int foreground;
+
+        if (button.getId() == R.id.playback_chip_subscribe) {
+            background = isOn ? R.color.shared_surface_container_high : R.color.shared_primary;
+            foreground = isOn ? R.color.shared_on_surface : R.color.shared_on_primary;
+            button.setText(isOn ? R.string.playback_subscribed : R.string.action_subscribe);
+        } else {
+            // The like/dislike halves sit on the group's pill and stay transparent when off
+            boolean isHalf = button.getParent() instanceof View && ((View) button.getParent()).getId() == R.id.playback_chip_rating;
+            background = isOn ? R.color.shared_active_container
+                    : isHalf ? android.R.color.transparent : R.color.shared_surface_container_high;
+            foreground = isOn ? R.color.shared_on_active_container : R.color.shared_on_surface;
+        }
+
+        int foregroundColor = androidx.core.content.ContextCompat.getColor(this, foreground);
+        button.setBackgroundTintList(androidx.core.content.ContextCompat.getColorStateList(this, background));
+        button.setIconTint(android.content.res.ColorStateList.valueOf(foregroundColor));
+        button.setTextColor(foregroundColor);
     }
 
     @Override
@@ -2363,6 +2405,9 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     }
 
     private void applyVideoDetails(String description, String commentsKey) {
+        // The like count comes with the same metadata
+        updateLikeCount(getVideo());
+
         if (mDescriptionCard == null) {
             return;
         }
@@ -2423,6 +2468,23 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         if (mChannelName != null) {
             mChannelName.setText(item.getAuthor());
         }
+
+        updateLikeCount(item);
+    }
+
+    /**
+     * The like half of the rating pill shows the count once the metadata has it.
+     */
+    private void updateLikeCount(Video item) {
+        MaterialButton likeButton = findViewById(R.id.playback_chip_like);
+
+        if (likeButton == null) {
+            return;
+        }
+
+        String likeCount = item != null ? item.likeCount : null;
+        likeButton.setText(likeCount);
+        likeButton.setIconPadding(TextUtils.isEmpty(likeCount) ? 0 : (int) (8 * getResources().getDisplayMetrics().density));
     }
 
     @Override

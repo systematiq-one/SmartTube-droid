@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark values of the tonal palette, see values/colors_shared.xml -->
+<resources>
+    <color name="shared_surface">#FF141213</color>
+    <color name="shared_surface_container">#FF1F1B1C</color>
+    <color name="shared_surface_container_high">#FF2A2526</color>
+    <color name="shared_on_surface">#FFEFE0DE</color>
+    <color name="shared_on_surface_variant">#FFD4C3C0</color>
+    <color name="shared_outline">#FF4F4445</color>
+    <color name="shared_active_container">#FF5B1D17</color>
+    <color name="shared_on_active_container">#FFFFDAD5</color>
+</resources>

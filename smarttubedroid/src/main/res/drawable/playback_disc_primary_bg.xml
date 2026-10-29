@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White disc behind play/pause -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#33000000">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/playback_disc_primary" />
+        </shape>
+    </item>
+</ripple>

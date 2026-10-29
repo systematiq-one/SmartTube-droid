@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Dark theme values of the player panel below the video, see values/colors_playback.xml -->
+<!-- Dark theme values of the player panel below the video, see values/colors_playback.xml.
+     The panel colors alias the tonal palette, whose dark values live in values-night/colors_shared.xml -->
 <resources>
-    <color name="playback_panel_bg">#FF0F0F0F</color>
-    <color name="playback_panel_text">#FFFFFFFF</color>
-    <color name="playback_panel_text_dim">#B3FFFFFF</color>
-    <color name="playback_divider">#22FFFFFF</color>
     <bool name="playback_light_panel">false</bool>
 </resources>

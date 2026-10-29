@@ -12,7 +12,8 @@
         android:id="@+id/browse_app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface">
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/browse_toolbar"
@@ -21,11 +22,31 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name" />
 
+        <!-- Sections as chips: tonal fill on the selected one, outlined otherwise.
+             BrowseActivity.applyChipStyle() sets browse_tab_bg on each tab view: TabLayout's own
+             tabBackground is drawn shifted by the strip's start padding -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/browse_tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabMode="scrollable" />
+            android:layout_height="36dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/colorSurface"
+            android:clipToPadding="false"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            app:tabGravity="start"
+            app:tabIndicatorHeight="0dp"
+            app:tabMinWidth="0dp"
+            app:tabMode="scrollable"
+            app:tabPaddingEnd="14dp"
+            app:tabPaddingStart="14dp"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabSelectedTextColor="@color/shared_on_active_container"
+            app:tabTextAppearance="@style/TextAppearance.SmartTubeDroid.Tab"
+            app:tabTextColor="@color/shared_on_surface_variant" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

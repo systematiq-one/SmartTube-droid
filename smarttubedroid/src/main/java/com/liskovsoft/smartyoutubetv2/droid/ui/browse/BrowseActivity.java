@@ -3,6 +3,7 @@ package com.liskovsoft.smartyoutubetv2.droid.ui.browse;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
@@ -250,6 +251,26 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
         return tab;
     }
 
+    /**
+     * The tabs are drawn as chips (browse_tab_bg), set on the tab view itself: TabLayout's
+     * tabBackground is drawn shifted by the strip's start padding. TabLayout has no spacing between
+     * tabs either, so each tab gets side margins once it's in the strip (addTab replaces its layout params).
+     */
+    private void applyChipStyle(TabLayout.Tab tab) {
+        tab.view.setBackgroundResource(R.drawable.browse_tab_bg);
+
+        ViewGroup.LayoutParams params = tab.view.getLayoutParams();
+
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            int margin = (int) (4 * getResources().getDisplayMetrics().density);
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+            marginParams.setMargins(margin, 0, margin, 0);
+            marginParams.setMarginStart(margin);
+            marginParams.setMarginEnd(margin);
+            tab.view.setLayoutParams(marginParams);
+        }
+    }
+
     // ------------------------------------------------------------ BrowseView
 
     @Override
@@ -280,7 +301,9 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
             mSections.add(insertIndex, section);
             // setSelected=false: never auto-select here; the presenter drives selection
             // through selectSection() after all sections are added
-            mTabLayout.addTab(createTab(section), insertIndex, false);
+            TabLayout.Tab tab = createTab(section);
+            mTabLayout.addTab(tab, insertIndex, false);
+            applyChipStyle(tab);
         } finally {
             mSuppressTabEvents = false;
         }

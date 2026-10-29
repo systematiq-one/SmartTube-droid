@@ -50,6 +50,8 @@ public class VideoCardHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         mThumbnail = itemView.findViewById(R.id.shared_card_thumbnail);
+        // Rounded corners: the placeholder background's shape is the outline
+        mThumbnail.setClipToOutline(true);
         mBadge = itemView.findViewById(R.id.shared_card_badge);
         mNewDot = itemView.findViewById(R.id.shared_card_new_dot);
         mProgress = itemView.findViewById(R.id.shared_card_progress);

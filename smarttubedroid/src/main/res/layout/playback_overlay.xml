@@ -114,32 +114,33 @@
 
         <ImageButton
             android:id="@+id/playback_btn_prev"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/playback_disc_bg"
+            android:padding="13dp"
             android:scaleType="fitCenter"
             android:src="@drawable/playback_ic_prev" />
 
         <ImageButton
             android:id="@+id/playback_btn_play"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginRight="24dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginLeft="28dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginRight="28dp"
+            android:background="@drawable/playback_disc_primary_bg"
+            android:padding="16dp"
+            android:tint="@color/playback_on_disc_primary"
             android:scaleType="fitCenter"
             android:src="@drawable/playback_ic_play" />
 
         <ImageButton
             android:id="@+id/playback_btn_next"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/playback_disc_bg"
+            android:padding="13dp"
             android:scaleType="fitCenter"
             android:src="@drawable/playback_ic_next" />
     </LinearLayout>
@@ -175,15 +176,22 @@
 
         <TextView
             android:id="@+id/playback_next_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/playback_next_pill_bg"
             android:ellipsize="end"
             android:maxLines="1"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
-            android:textColor="@color/playback_control_dim"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="3dp"
+            android:textColor="@color/playback_control"
             android:textSize="12sp"
             android:visibility="gone" />
 

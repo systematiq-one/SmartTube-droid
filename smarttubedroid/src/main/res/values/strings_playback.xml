@@ -16,6 +16,11 @@
     <string name="playback_more">More options</string>
     <string name="playback_time_zero">0:00</string>
     <string name="playback_comments">Comments</string>
+    <string name="playback_chip_share">Share</string>
+    <string name="playback_chip_speed">Speed</string>
+    <string name="playback_chip_save">Save</string>
+    <string name="playback_chip_listen">Listen</string>
+    <string name="playback_subscribed">Subscribed</string>
     <string name="playback_description">Description</string>
     <string name="playback_details_close">Close</string>
     <string name="playback_comment_replies">%1$s replies</string>
