@@ -1,0 +1,7 @@
+* New look: softer colors, labelled buttons under the video (like count, quality, speed, save, listen) and section chips on the home screen, in light and dark theme
+* The Subscribe button is red, and says "Subscribed" once you follow the channel
+* New: show up in the YouTube app's cast list (Settings › Remote control › Show in YouTube cast list)
+* Live streams: the seek bar shows the part of the stream you can rewind, plus an experimental "SABR live streams" option (Settings › Player › Developer options)
+* Fixed: SmartTube showing up twice in the recent apps list
+* Fixed: a gray bar behind the navigation buttons in light mode
+* Latest SmartTube playback fixes
