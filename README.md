@@ -1,4 +1,4 @@
-<img src="logo.png" width="110" alt="logo">
+<img src="logo-3d.png" width="120" alt="SmartTube Droid logo">
 
 # SmartTube Droid
 
