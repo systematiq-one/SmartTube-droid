@@ -768,7 +768,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
                 }
 
                 long positionMs = progressToPositionMs(progress);
-                mPositionLabel.setText(formatTime(positionMs));
+                mPositionLabel.setText(formatTime(positionMs - getTimelineOffsetMs()));
                 // Feeds chapter/segment titles (PlayerUIController.updateSeekPreviewTitle)
                 mPlaybackPresenter.onSeekPositionChanged(positionMs);
             }
@@ -1656,29 +1656,47 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     }
 
     private void updateProgress() {
-        long positionMs = getPositionMs();
-        long durationMs = getDurationMs();
+        boolean isSeekBlocked = mExoPlayerController.isSeekBlocked();
+        long positionMs = Math.max(getPositionMs() - getTimelineOffsetMs(), 0);
+        // Live stream without rewind: the bar is always full and can't be moved
+        long durationMs = isSeekBlocked ? positionMs : getTimelineDurationMs();
 
-        if (positionMs < 0) {
-            positionMs = 0;
-        }
+        mSeekBar.setEnabled(!isSeekBlocked);
 
         if (!mIsScrubbing) {
-            mSeekBar.setProgress(durationMs > 0 ? (int) (positionMs * SEEK_BAR_MAX / durationMs) : 0);
+            mSeekBar.setProgress(toProgress(positionMs, durationMs));
             mPositionLabel.setText(formatTime(positionMs));
         }
 
-        mSeekBar.setSecondaryProgress(mPlayer != null ? mPlayer.getBufferedPercentage() * (SEEK_BAR_MAX / 100) : 0);
+        long bufferedMs = mPlayer != null ? mPlayer.getBufferedPosition() - getTimelineOffsetMs() : 0;
+        mSeekBar.setSecondaryProgress(isSeekBlocked ? SEEK_BAR_MAX : toProgress(bufferedMs, durationMs));
         mDurationLabel.setText(formatTime(durationMs));
 
         updatePlayButton();
         updateEndingTime();
     }
 
-    private long progressToPositionMs(int progress) {
-        long durationMs = getDurationMs();
+    /**
+     * The player timeline may start earlier than what is allowed to watch (sabr live streams use
+     * the absolute stream time). The bar and its labels start at this offset of the player timeline.
+     */
+    private long getTimelineOffsetMs() {
+        return mExoPlayerController.isSeekBlocked() ? 0 : mExoPlayerController.getLiveStartMs();
+    }
 
-        return durationMs > 0 ? durationMs * progress / SEEK_BAR_MAX : 0;
+    /** Length of the part of the player timeline that the bar shows. */
+    private long getTimelineDurationMs() {
+        return Math.max(getDurationMs() - getTimelineOffsetMs(), 0);
+    }
+
+    private static int toProgress(long timelinePositionMs, long timelineDurationMs) {
+        return timelineDurationMs > 0
+                ? (int) clampLong(timelinePositionMs * SEEK_BAR_MAX / timelineDurationMs, 0, SEEK_BAR_MAX) : 0;
+    }
+
+    /** @return the player position for the bar progress */
+    private long progressToPositionMs(int progress) {
+        return getTimelineOffsetMs() + getTimelineDurationMs() * progress / SEEK_BAR_MAX;
     }
 
     private static String formatTime(long timeMs) {
@@ -1760,6 +1778,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     @Override
     public void onSeekStart() {
+        if (mExoPlayerController.isSeekBlocked()) {
+            return; // live stream without rewind
+        }
+
         mSeekAnchorMs = getPositionMs();
         mSeekTargetMs = mSeekAnchorMs;
         // Stop the periodic updater from overwriting the preview position
@@ -1768,7 +1790,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     @Override
     public void onSeekDelta(float totalDelta) {
-        long durationMs = getDurationMs();
+        long offsetMs = getTimelineOffsetMs();
+        long durationMs = getTimelineDurationMs();
 
         if (durationMs <= 0 || mSeekAnchorMs < 0) {
             return;
@@ -1777,21 +1800,21 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         // A full-width swipe covers SEEK_SWIPE_FRACTION of the video, capped so that very long
         // videos stay controllable and very short ones don't jump wildly
         long spanMs = Math.min((long) (durationMs * SEEK_SWIPE_FRACTION), MAX_SEEK_SWIPE_MS);
-        mSeekTargetMs = clampLong(mSeekAnchorMs + (long) (totalDelta * spanMs), 0, durationMs);
+        mSeekTargetMs = clampLong(mSeekAnchorMs + (long) (totalDelta * spanMs), offsetMs, offsetMs + durationMs);
 
         long diffMs = mSeekTargetMs - mSeekAnchorMs;
         String label = String.format(Locale.US, "%s  [%s%s]",
-                formatTime(mSeekTargetMs), diffMs >= 0 ? "+" : "-", formatTime(Math.abs(diffMs)));
+                formatTime(mSeekTargetMs - offsetMs), diffMs >= 0 ? "+" : "-", formatTime(Math.abs(diffMs)));
 
         showIndicator(diffMs >= 0 ? R.drawable.playback_ic_next : R.drawable.playback_ic_prev, label);
 
         // Move the scrubber and the clock along so the controls agree with the preview
         if (mSeekBar != null) {
-            mSeekBar.setProgress((int) (mSeekTargetMs * SEEK_BAR_MAX / durationMs));
+            mSeekBar.setProgress(toProgress(mSeekTargetMs - offsetMs, durationMs));
         }
 
         if (mPositionLabel != null) {
-            mPositionLabel.setText(formatTime(mSeekTargetMs));
+            mPositionLabel.setText(formatTime(mSeekTargetMs - offsetMs));
         }
     }
 
@@ -2515,15 +2538,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
     @Override
     public long getDurationMs() {
-        long durationMs = mExoPlayerController.getDurationMs();
-
-        long liveDurationMs = getVideo() != null ? getVideo().getLiveDurationMs() : 0;
-
-        if (durationMs > Video.MAX_LIVE_DURATION_MS && liveDurationMs != 0) {
-            durationMs = liveDurationMs;
-        }
-
-        return durationMs;
+        // The controller resolves the live stream length itself (sabr live edge or the video fallback)
+        return mExoPlayerController.getDurationMs();
     }
 
     @Override

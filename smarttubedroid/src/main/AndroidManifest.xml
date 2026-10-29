@@ -10,6 +10,8 @@
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- DIAL discovery (SSDP multicast): show up in the cast list of YouTube apps -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
