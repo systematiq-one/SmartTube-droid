@@ -6,13 +6,17 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build.VERSION;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
+import com.liskovsoft.smartyoutubetv2.droid.R;
 
 /**
  * Base activity for all touch UI screens.
@@ -136,6 +140,53 @@ public abstract class DroidActivity extends MotherActivity {
     protected void applySystemBars() {
         setNavigationBarVisible(!isLandscape());
         hookInsets();
+        applyNavigationBarStyle(!isLandscape());
+    }
+
+    /**
+     * The fullscreen helper makes the navigation bar translucent, which shows the system's gray
+     * scrim behind the buttons (unnoticeable on dark, a gray band on light). While the bar is on
+     * screen the content is inset above it anyway (see hookInsets), so give the bar the tonal
+     * surface color instead, with dark buttons on light. A hidden bar (fullscreen) stays
+     * translucent: swiped in, it shows over the content.
+     */
+    @SuppressWarnings("deprecation")
+    protected void applyNavigationBarStyle(boolean isBarShown) {
+        if (VERSION.SDK_INT < 21) {
+            return;
+        }
+
+        Window window = getWindow();
+
+        if (!isBarShown) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            return;
+        }
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setNavigationBarColor(ContextCompat.getColor(this, R.color.shared_surface));
+
+        if (VERSION.SDK_INT >= 29) {
+            window.setNavigationBarContrastEnforced(false);
+        }
+
+        boolean isLight = (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                != Configuration.UI_MODE_NIGHT_YES;
+
+        if (VERSION.SDK_INT >= 30) {
+            WindowInsetsController controller = window.getInsetsController();
+
+            if (controller != null) {
+                controller.setSystemBarsAppearance(isLight ? WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS : 0,
+                        WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
+            }
+        } else if (VERSION.SDK_INT >= 26) {
+            View decorView = window.getDecorView();
+            int flags = decorView.getSystemUiVisibility();
+            decorView.setSystemUiVisibility(isLight ? flags | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    : flags & ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        }
     }
 
     protected boolean isLandscape() {

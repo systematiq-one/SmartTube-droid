@@ -1335,6 +1335,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
      */
     private void applySystemUi(boolean fullscreen) {
         setNavigationBarVisible(!fullscreen);
+        applyNavigationBarStyle(!fullscreen);
     }
 
     /**
