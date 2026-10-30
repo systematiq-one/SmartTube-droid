@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: the splash screen only routes (see SplashActivity) and stays invisible.
+         A translucent activity gets no system splash window, so the launcher's opening
+         animation goes straight to the task brought to front: the video grows out of the icon
+         it shrank into. A cold start still shows the system splash, for the browse screen's
+         new task -->
+    <style name="Theme.SmartTubeDroid.Splash">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+</resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -38,6 +38,24 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/signin_view_title" />
 
+                <!-- Back from the browser: the sign-in may land any second -->
+                <ProgressBar
+                    android:id="@+id/signin_progress"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="12dp"
+                    android:indeterminateTint="@color/shared_primary"
+                    android:visibility="gone" />
+
+                <!-- Shown once there is a code -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/signin_copy_button"
+                    style="@style/Widget.SmartTubeDroid.Pill"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/signin_copy_code"
+                    android:visibility="gone"
+                    app:icon="@drawable/signin_ic_copy" />
+
                 <!-- "To sign-in enter this code on page {signInUrl}" — text set at runtime
                      (format string with the URL colored, mirroring TV's SignInFragment) -->
                 <TextView
@@ -55,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:enabled="false"
-                    android:text="@string/login_from_browser" />
+                    android:text="@string/signin_open_browser" />
 
                 <!-- Shown after the browser is opened: the activation page has no way to bring
                      the user back, so explain that returning here is enough -->

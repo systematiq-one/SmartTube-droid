@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 
 import com.liskovsoft.sharedutils.helpers.FileHelpers;
@@ -163,6 +164,22 @@ public class ViewManager {
 
     public boolean hasParentView(Activity activity) {
         return mActivityStack.size() > 1 || getDefaultParent(activity) != null;
+    }
+
+    /**
+     * The screen {@link #startParentView(Activity)} would open for this one, if any.
+     */
+    @Nullable
+    public Class<?> getParentActivity(Activity activity) {
+        if (isPlayerOnlyModeEnabled()) {
+            return null;
+        }
+
+        if (mActivityStack.size() > 1 && mActivityStack.peek() == activity.getClass()) {
+            return mActivityStack.get(mActivityStack.size() - 2);
+        }
+
+        return mActivityStack.size() == 1 && mActivityStack.peek() == activity.getClass() ? getDefaultParent(activity) : null;
     }
 
     public void startDefaultView() {

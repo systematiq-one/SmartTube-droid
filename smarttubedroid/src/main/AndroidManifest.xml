@@ -7,6 +7,11 @@
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+        <!-- Sign-in: the activation link goes to the default browser, not to the YouTube app -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -54,8 +59,15 @@
         tools:replace="android:theme,android:allowBackup"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
+        <!-- Own task, out of Recents: the launcher icon must always come through here. In the
+             main task the icon would just bring that task back, so a video left with HOME (the
+             player has a task of its own) reopened as the screen under it, followed by the video
+             sliding in. From here the right task is brought to front within the launcher's own
+             animation, see SplashActivity.returnToApp() -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.splash.SplashActivity"
+            android:taskAffinity="${applicationId}.launch"
+            android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
             android:theme="@style/Theme.SmartTubeDroid.Splash">
@@ -145,12 +157,16 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize|stateVisible" />
 
+        <!-- singleTop: the presenters start their view again once the content arrives (on TV
+             every screen is a single instance), which stacked a second copy of the screen -->
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.channel.ChannelActivity"
+            android:launchMode="singleTop"
             android:exported="false" />
 
         <activity
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.channeluploads.ChannelUploadsActivity"
+            android:launchMode="singleTop"
             android:exported="false" />
 
         <activity

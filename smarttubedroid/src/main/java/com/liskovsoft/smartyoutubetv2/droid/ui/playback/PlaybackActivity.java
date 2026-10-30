@@ -334,6 +334,11 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             keepPlayingIfScreenOff();
             maybeReleasePlayer();
         }
+
+        // Left with HOME or for another app: the screen under the video must outlive it
+        if (!isFinishing()) {
+            showMainTaskInRecents();
+        }
     }
 
     @Override
@@ -1432,6 +1437,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         sIsInPipMode = isInPictureInPictureMode;
 
+        if (isInPictureInPictureMode) {
+            showMainTaskInRecents(); // see onStop()
+        }
+
         showHideWidgets(!isInPictureInPictureMode);
         applyOrientation();
     }
@@ -1484,7 +1493,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             blockEngine(true);
             // Ensure this activity is reopened when the user returns to the app
             getViewManager().blockTop(this);
-            getViewManager().startParentView(this);
+            // The player keeps running, so it can't finish first (see DroidActivity.finish):
+            // moving its task back makes it a close as well, the parent comes in from the left
+            moveTaskToBack(true);
+            startParentScreen();
         } else {
             if (getPlayerTweaksData().isKeepFinishedActivityEnabled()) {
                 getViewManager().startParentView(this);

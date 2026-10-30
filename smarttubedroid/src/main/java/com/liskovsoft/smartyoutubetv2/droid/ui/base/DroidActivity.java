@@ -1,6 +1,7 @@
 package com.liskovsoft.smartyoutubetv2.droid.ui.base;
 
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -11,6 +12,7 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
@@ -18,7 +20,9 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.PlaybackView;
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
 import com.liskovsoft.smartyoutubetv2.droid.R;
+import com.liskovsoft.smartyoutubetv2.droid.ui.dialogs.AppDialogActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.playback.PlaybackActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.splash.SplashActivity;
 
 /**
  * Base activity for all touch UI screens.
@@ -40,6 +44,11 @@ public abstract class DroidActivity extends MotherActivity {
     private static int sStartedCount;
     /** Every screen stopped: the user went to the home screen or another app */
     private static boolean sIsAppLeft;
+    /**
+     * The main task sits right behind the player (the video was opened from it), not behind the
+     * home screen, where Android removes a task hidden from Recents. See {@link #updateRecentsEntries()}
+     */
+    private static boolean sIsMainTaskBehind;
 
     private boolean mInsetsHooked;
 
@@ -69,6 +78,7 @@ public abstract class DroidActivity extends MotherActivity {
 
         if (sStartedCount == 0 && !isChangingConfigurations()) {
             sIsAppLeft = true;
+            sIsMainTaskBehind = false;
         }
     }
 
@@ -88,10 +98,9 @@ public abstract class DroidActivity extends MotherActivity {
     }
 
     /**
-     * The user came back from the home screen or another app. On TV the launcher always goes
-     * through the splash screen, which drops the exit state and reopens the last screen
-     * ({@code ViewManager.startDefaultView()}). Here the launcher just brings the main task back as
-     * it was, so do the same:<br/>
+     * The user came back from the home screen or another app other than through the launcher
+     * icon (Recents, a notification...), which goes through the splash screen, as on TV. The
+     * splash screen drops the exit state and reopens the last screen, so do the same here:<br/>
      * - a stale move-to-back state (left by a video opened from another app) would send every
      * screen straight back to the background, and the app couldn't be opened again.<br/>
      * - the player runs in a task of its own, so leaving a video with HOME and tapping the
@@ -100,15 +109,26 @@ public abstract class DroidActivity extends MotherActivity {
     protected void onAppReturned() {
         getViewManager().resetExitState();
 
-        if (getRecentsMode() == RECENTS_MAIN && getViewManager().getTopView() == PlaybackView.class) {
-            PlaybackPresenter playbackPresenter = PlaybackPresenter.instance(this);
-
-            // A PIP window stays a PIP window: the user is back for the other screens
-            if (playbackPresenter.getView() != null && !playbackPresenter.isInPipMode()) {
-                startActivity(new Intent(this, PlaybackActivity.class));
-                overridePendingTransition(0, 0);
-            }
+        if (getRecentsMode() == RECENTS_MAIN && reopenPlayer()) {
+            overridePendingTransition(0, 0);
         }
+    }
+
+    /**
+     * Brings the video back if it was the last screen open (the player has a task of its own).
+     * A PIP window stays a PIP window: the user is back for the other screens.
+     */
+    protected boolean reopenPlayer() {
+        PlaybackPresenter playbackPresenter = PlaybackPresenter.instance(this);
+
+        if (getViewManager().getTopView() != PlaybackView.class
+                || playbackPresenter.getView() == null || playbackPresenter.isInPipMode()) {
+            return false;
+        }
+
+        startActivity(new Intent(this, PlaybackActivity.class));
+
+        return true;
     }
 
     @Override
@@ -135,12 +155,19 @@ public abstract class DroidActivity extends MotherActivity {
     /**
      * One app, one Recents entry. The player runs in a task of its own (see the manifest), so while
      * it's in front the main task behind it is hidden from Recents, and any screen of the main task
-     * shows it again. (The player's own task leaves Recents once it finishes: autoRemoveFromRecents.)
+     * shows it again, as does the player once it leaves the screen ({@link #showMainTaskInRecents()}).
+     * (The player's own task leaves Recents once it finishes: autoRemoveFromRecents.)<br/>
+     * Only hidden while it's right behind the player: Android removes a task hidden from Recents
+     * once it's behind the home screen, as it is when the player is back from Recents, say.
      */
     private void updateRecentsEntries() {
         int mode = getRecentsMode();
 
-        if (mode == RECENTS_IGNORE) {
+        if (mode == RECENTS_MAIN) {
+            sIsMainTaskBehind = true; // in front now: whatever opens next goes on top of it
+        }
+
+        if (mode == RECENTS_IGNORE || (mode == RECENTS_SOLE && !sIsMainTaskBehind)) {
             return;
         }
 
@@ -165,6 +192,127 @@ public abstract class DroidActivity extends MotherActivity {
         }
     }
 
+    /**
+     * The main task was brought right behind the player (see {@link #updateRecentsEntries()}).
+     */
+    protected static void onMainTaskMovedBehind() {
+        sIsMainTaskBehind = true;
+    }
+
+    /**
+     * Lists the main task in Recents again. Android removes a task hidden from Recents once it's
+     * behind the home screen (at the next Recents update, e.g. as soon as another app opens), and
+     * with it the screen the video was opened from, so BACK from the video would find no playlist
+     * to return to.
+     */
+    protected void showMainTaskInRecents() {
+        ActivityManager.AppTask mainTask = findMainTask();
+
+        if (mainTask == null) {
+            return;
+        }
+
+        try {
+            mainTask.setExcludeFromRecents(false);
+        } catch (IllegalArgumentException | SecurityException e) {
+            // Went away meanwhile
+        }
+    }
+
+    /**
+     * BACK to the screen this one was opened from.
+     */
+    protected void startParentScreen() {
+        if (!moveToParentTask()) {
+            getViewManager().startParentView(this);
+        }
+    }
+
+    /**
+     * BACK from a screen with a task of its own (the player) to the screen it was opened from,
+     * which is still the top of the main task: uncover that task, or bring it back, as it is. Starting the screen
+     * instead, as ViewManager does, would put a second copy of it (e.g. the playlist) into this
+     * task. Should the system have removed the main task meanwhile, the screen starts anew in a
+     * main task of its own (its presenter still holds what it showed).
+     */
+    private boolean moveToParentTask() {
+        if (getRecentsMode() != RECENTS_SOLE || VERSION.SDK_INT < 23) {
+            return false;
+        }
+
+        Class<?> parent = getViewManager().getParentActivity(this);
+
+        if (parent == null) {
+            return false;
+        }
+
+        ActivityManager.AppTask mainTask = findMainTask();
+
+        if (mainTask == null) {
+            getViewManager().removeTop(this);
+            startActivity(new Intent(this, parent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            return true;
+        }
+
+        ComponentName top = mainTask.getTaskInfo().topActivity;
+
+        if (top == null || !parent.getName().equals(top.getClassName())) {
+            return false;
+        }
+
+        getViewManager().removeTop(this);
+
+        // Right behind: leaving this task uncovers it, with the system's own back animation.
+        // Bringing it to front instead plays the task switch (in from the right on One UI)
+        if (sIsMainTaskBehind) {
+            return true;
+        }
+
+        try {
+            mainTask.moveToFront();
+        } catch (IllegalArgumentException | SecurityException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * The task with the browse screen and the screens opened from it, as opposed to the tasks of
+     * their own (player, dialogs, splash screen: see the manifest).
+     */
+    @Nullable
+    protected ActivityManager.AppTask findMainTask() {
+        if (VERSION.SDK_INT < 23) {
+            return null; // no base activity info
+        }
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (manager == null) {
+            return null;
+        }
+
+        try {
+            for (ActivityManager.AppTask task : manager.getAppTasks()) {
+                ComponentName base = task.getTaskInfo().baseActivity;
+
+                if (base != null && !isOwnTaskActivity(base.getClassName())) {
+                    return task;
+                }
+            }
+        } catch (IllegalArgumentException | SecurityException e) {
+            // A task went away meanwhile
+        }
+
+        return null;
+    }
+
+    private static boolean isOwnTaskActivity(String className) {
+        return className.equals(PlaybackActivity.class.getName()) || className.equals(AppDialogActivity.class.getName())
+                || className.equals(SplashActivity.class.getName());
+    }
+
     @SuppressWarnings("deprecation")
     private static int getTaskId(ActivityManager.RecentTaskInfo info) {
         return VERSION.SDK_INT >= 29 ? info.taskId : info.persistentId;
@@ -175,13 +323,17 @@ public abstract class DroidActivity extends MotherActivity {
      * back stack can't return to the video from a screen opened in the player, e.g. a channel.
      * Go through ViewManager's record of the opened screens instead, as TV's LeanbackActivity does.<br/>
      * BACK on the first screen while the sound plays in the background goes to the home screen and
-     * leaves the app as it is: finishing would just uncover the player's task behind it.
+     * leaves the app as it is: finishing would just uncover the player's task behind it.<br/>
+     * The screen finishes before the parent starts: Android then animates a close (the parent
+     * comes in from the left, as the edge swipe suggests), not the opening of a new screen.
      */
     @Override
     public void finish() {
         if (isBackPressed()) {
             if (getViewManager().hasParentView(this)) {
-                getViewManager().startParentView(this);
+                super.finish();
+                startParentScreen();
+                return;
             } else if (PlaybackPresenter.instance(this).isRunningInBackground()) {
                 resetBackState();
                 startActivity(new Intent(Intent.ACTION_MAIN)
