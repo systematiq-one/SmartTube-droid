@@ -1,0 +1,7 @@
+* New 3D logo for the app icon and splash screen
+* Leaving a video with the home button and tapping the SmartTube icon brings the video back where it stopped, growing out of the icon
+* Back from a video returns to the playlist or page you opened it from, as you left it, sliding in from the left
+* Sign-in: "Copy code" button, and "Open in browser" opens your browser with the code already filled in
+* Sign-in no longer fails when the connection drops while you enter the code, shows "Checking sign-in…" when you come back, and a second account can be added
+* Fixed: SmartTube sometimes not opening again from its icon after leaving a video
+* Fixed: playlists and channels opening twice
