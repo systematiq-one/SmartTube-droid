@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -26,12 +28,17 @@ import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
  * The presenter closes the screen automatically once the user finishes on the activation page.
  */
 public class SignInActivity extends DroidActivity implements SignInView {
+    /** Same as the layout's code text */
+    private static final float CODE_TEXT_SIZE_SP = 34;
+    private static final float CODE_LETTER_SPACING = 0.2f;
+    private static final float ERROR_TEXT_SIZE_SP = 24;
     private SignInPresenter mSignInPresenter;
     private TextView mCodeText;
     private TextView mDescriptionText;
     private TextView mWaitingText;
     private MaterialButton mOpenBrowserButton;
     private String mFullSignInUrl;
+    private boolean mIsError;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,7 +115,16 @@ public class SignInActivity extends DroidActivity implements SignInView {
         }
 
         // NOTE: on error the presenter passes the error message as the code and an empty url
+        if (TextUtils.isEmpty(signInUrl)) {
+            showError(userCode);
+            return;
+        }
+
+        mIsError = false;
         mCodeText.setText(userCode);
+        mCodeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, CODE_TEXT_SIZE_SP);
+        mCodeText.setLetterSpacing(CODE_LETTER_SPACING);
+        mOpenBrowserButton.setText(R.string.login_from_browser);
 
         mFullSignInUrl = !TextUtils.isEmpty(fullSignInUrl) ? fullSignInUrl : signInUrl;
         mOpenBrowserButton.setEnabled(!TextUtils.isEmpty(mFullSignInUrl));
@@ -127,7 +143,48 @@ public class SignInActivity extends DroidActivity implements SignInView {
         finish();
     }
 
+    /**
+     * The raw exception text used to fill the code slot in huge letters. Say what went wrong
+     * instead, and turn the browser button into a retry, which asks for a fresh code.
+     */
+    private void showError(String message) {
+        mIsError = true;
+        boolean isNetworkError = isNetworkError(message);
+
+        mCodeText.setText(isNetworkError ? R.string.signin_error_network : R.string.signin_error);
+        mCodeText.setTextSize(TypedValue.COMPLEX_UNIT_SP, ERROR_TEXT_SIZE_SP);
+        mCodeText.setLetterSpacing(0);
+        mDescriptionText.setText(isNetworkError ? getString(R.string.signin_error_network_hint) : message);
+
+        mFullSignInUrl = null;
+        mOpenBrowserButton.setText(R.string.signin_try_again);
+        mOpenBrowserButton.setEnabled(true);
+
+        if (mWaitingText != null) {
+            mWaitingText.setVisibility(View.GONE);
+        }
+    }
+
+    private static boolean isNetworkError(String message) {
+        return message != null && (message.contains("java.net.") || message.contains("javax.net.ssl.")
+                || message.contains("Unable to resolve host"));
+    }
+
+    private void retry() {
+        mCodeText.setText(R.string.signin_view_title);
+        mDescriptionText.setText(getString(R.string.signin_view_description, ""));
+        mOpenBrowserButton.setText(R.string.login_from_browser);
+        mOpenBrowserButton.setEnabled(false);
+
+        mSignInPresenter.onViewInitialized(); // requests a new code
+    }
+
     private void openInBrowser() {
+        if (mIsError) {
+            retry();
+            return;
+        }
+
         if (TextUtils.isEmpty(mFullSignInUrl)) {
             return;
         }

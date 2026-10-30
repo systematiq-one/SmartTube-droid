@@ -18,6 +18,8 @@ public class SplashActivity extends DroidActivity implements SplashView {
 
         mNewIntent = getIntent();
 
+        onAppReturnHandled();
+
         SplashPresenter presenter = SplashPresenter.instance(this);
         presenter.setView(this);
         presenter.onViewInitialized();
@@ -29,9 +31,21 @@ public class SplashActivity extends DroidActivity implements SplashView {
 
         mNewIntent = intent;
 
+        onAppReturnHandled();
+
         SplashPresenter presenter = SplashPresenter.instance(this);
         presenter.setView(this);
         presenter.onViewInitialized();
+    }
+
+    /**
+     * The presenter opens the right screen itself (ViewManager.startDefaultView or the intent's
+     * video, channel...), so a return through here needs nothing more. Not counted as a screen
+     * either: it's gone before the next one starts.
+     */
+    @Override
+    protected boolean isReturnTracked() {
+        return false;
     }
 
     @Override

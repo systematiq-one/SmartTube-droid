@@ -1,0 +1,34 @@
+diff --git a/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/auth/V2/AuthService.java b/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/auth/V2/AuthService.java
+index 5813a05a..03252709 100644
+--- a/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/auth/V2/AuthService.java
++++ b/youtubeapi/src/main/java/com/liskovsoft/youtubeapi/auth/V2/AuthService.java
+@@ -11,6 +11,8 @@ import com.liskovsoft.googlecommon.common.models.auth.info.AccountsList;
+ import com.liskovsoft.googlecommon.common.helpers.RetrofitHelper;
+ import retrofit2.Call;
+ 
++import java.io.InterruptedIOException;
++import java.net.SocketTimeoutException;
+ import java.util.List;
+ 
+ public class AuthService {
+@@ -87,7 +89,19 @@ public class AuthService {
+         for (int i = 0; i < REFRESH_TOKEN_ATTEMPTS; i++) {
+             Thread.sleep(REFRESH_TOKEN_ATTEMPT_INTERVAL_MS);
+ 
+-            tokenResult = getAccessToken(deviceCode);
++            try {
++                tokenResult = getAccessToken(deviceCode);
++            } catch (IllegalStateException e) {
++                // A dropped connection (e.g. no data while the user enters the code in the browser)
++                // must not end the sign-in: the device code stays valid, so keep polling.
++                // A disposed subscription interrupts the call: stop then.
++                if (e.getCause() instanceof InterruptedIOException && !(e.getCause() instanceof SocketTimeoutException)) {
++                    throw new InterruptedException();
++                }
++
++                Log.e(TAG, "Access token poll failed: %s", e.getMessage());
++                continue;
++            }
+ 
+             if (tokenResult != null && tokenResult.getRefreshToken() != null) {
+                 break;

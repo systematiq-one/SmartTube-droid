@@ -294,6 +294,17 @@ public class ViewManager {
         mIsPlayerOnlyModeEnabled = enable;
     }
 
+    /**
+     * For apps whose launcher icon may bring a screen back without going through the splash
+     * screen (and so {@link #startDefaultView()}): drops the exit state left from the last time
+     * the app was left. A stale move-to-back state sends every screen straight back to the
+     * background, so the app can't be opened again.
+     */
+    public void resetExitState() {
+        mIsMoveToBackEnabled = false;
+        mIsPlayerOnlyModeEnabled = false;
+    }
+
     public boolean isPlayerOnlyModeEnabled() {
         //return mIsPlayerOnlyModeEnabled && PlaybackPresenter.instance(mContext).getBackgroundMode() != PlayerEngine.BACKGROUND_MODE_PIP;
         return mIsPlayerOnlyModeEnabled && !PlaybackPresenter.instance(mContext).isInPipMode();

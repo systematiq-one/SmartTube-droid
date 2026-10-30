@@ -55,3 +55,9 @@ apply() {
 # Disabled: MediaServiceCore 7c2451ea went legacy-first upstream (mTryInnertubeFirst = false),
 # so the patch no longer applies. Kept in case upstream flips the order back.
 # apply MediaServiceCore mediaservicecore-legacy-format-info-first.patch
+
+# The sign-in screen polls for the token every 3 s while the user enters the code in the
+# browser. A single network error (no data for the app while it's in the background, a
+# Wi-Fi/mobile switch) ended the sign-in with an UnknownHostException in place of the code.
+# Keeps polling through network errors; the device code stays valid meanwhile.
+apply MediaServiceCore mediaservicecore-signin-survives-network-drop.patch

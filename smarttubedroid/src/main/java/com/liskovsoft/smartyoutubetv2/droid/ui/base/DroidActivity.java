@@ -15,8 +15,10 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
+import com.liskovsoft.smartyoutubetv2.common.app.views.PlaybackView;
 import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
 import com.liskovsoft.smartyoutubetv2.droid.R;
+import com.liskovsoft.smartyoutubetv2.droid.ui.playback.PlaybackActivity;
 
 /**
  * Base activity for all touch UI screens.
@@ -34,7 +36,80 @@ public abstract class DroidActivity extends MotherActivity {
     /** Left as the manifest sets it (the dialogs are excluded there) */
     protected static final int RECENTS_IGNORE = 2;
 
+    /** Started (visible) screens of the app, see {@link #onAppReturned()} */
+    private static int sStartedCount;
+    /** Every screen stopped: the user went to the home screen or another app */
+    private static boolean sIsAppLeft;
+
     private boolean mInsetsHooked;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!isReturnTracked()) {
+            return;
+        }
+
+        if (sStartedCount++ == 0 && sIsAppLeft) {
+            sIsAppLeft = false;
+            onAppReturned();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (!isReturnTracked()) {
+            return;
+        }
+
+        sStartedCount = Math.max(sStartedCount - 1, 0);
+
+        if (sStartedCount == 0 && !isChangingConfigurations()) {
+            sIsAppLeft = true;
+        }
+    }
+
+    /**
+     * Whether this screen counts in {@link #onAppReturned()}. The splash screen doesn't: it handles
+     * the return itself, see {@link #onAppReturnHandled()}.
+     */
+    protected boolean isReturnTracked() {
+        return true;
+    }
+
+    /**
+     * The return to the app needs no more handling (the splash screen opened the right screen).
+     */
+    protected static void onAppReturnHandled() {
+        sIsAppLeft = false;
+    }
+
+    /**
+     * The user came back from the home screen or another app. On TV the launcher always goes
+     * through the splash screen, which drops the exit state and reopens the last screen
+     * ({@code ViewManager.startDefaultView()}). Here the launcher just brings the main task back as
+     * it was, so do the same:<br/>
+     * - a stale move-to-back state (left by a video opened from another app) would send every
+     * screen straight back to the background, and the app couldn't be opened again.<br/>
+     * - the player runs in a task of its own, so leaving a video with HOME and tapping the
+     * launcher icon would show the screen under the video instead of the video.
+     */
+    protected void onAppReturned() {
+        getViewManager().resetExitState();
+
+        if (getRecentsMode() == RECENTS_MAIN && getViewManager().getTopView() == PlaybackView.class) {
+            PlaybackPresenter playbackPresenter = PlaybackPresenter.instance(this);
+
+            // A PIP window stays a PIP window: the user is back for the other screens
+            if (playbackPresenter.getView() != null && !playbackPresenter.isInPipMode()) {
+                startActivity(new Intent(this, PlaybackActivity.class));
+                overridePendingTransition(0, 0);
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
