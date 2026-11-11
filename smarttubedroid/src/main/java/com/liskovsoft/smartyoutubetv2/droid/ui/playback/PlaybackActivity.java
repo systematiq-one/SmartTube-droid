@@ -335,8 +335,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             maybeReleasePlayer();
         }
 
-        // Left with HOME or for another app: the screen under the video must outlive it
-        if (!isFinishing()) {
+        // Left with HOME or for another app: the screen under the video must outlive it.
+        // Not while the sound plays on ('Listen'): the player is the app's single Recents entry
+        // then, and BACK from the video starts that screen anew should Android have removed it.
+        if (!isFinishing() && (!isEngineBlocked() || isInPIPMode())) {
             showMainTaskInRecents();
         }
     }
@@ -351,6 +353,12 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         // Fix situations when the engine wasn't properly destroyed (e.g. after closing dialogs)
         releasePlayer();
+
+        // Closed while the sound played in the background (e.g. from the notification): the main
+        // task, hidden meanwhile, is the app's Recents entry again
+        if (isFinishing()) {
+            showMainTaskInRecents();
+        }
 
         if (mGestureHandler != null) {
             mGestureHandler.release();
@@ -1453,8 +1461,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         super.onUserLeaveHint();
 
         // The activity may just be overlapped by a dialog/search: not a real leave
+        // 'Listen' keeps the sound on HOME whatever the shortcut setting, see skipPip()
         if (isBackPressed() || isFinishing() || getViewManager().isNewViewPending()
-                || getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_BACK) {
+                || (getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_BACK
+                    && !isBackgroundListening())) {
             return;
         }
 
@@ -1493,9 +1503,10 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             blockEngine(true);
             // Ensure this activity is reopened when the user returns to the app
             getViewManager().blockTop(this);
-            // The player keeps running, so it can't finish first (see DroidActivity.finish):
-            // moving its task back makes it a close as well, the parent comes in from the left
-            moveTaskToBack(true);
+            // The player keeps running, so it can't finish first (see DroidActivity.finish). Its
+            // task stays in place, with the main task brought over it: moved back, it would be
+            // behind the home screen, where Android removes it once it's hidden from Recents
+            // (DroidActivity.updateRecentsEntries), and the sound would stop
             startParentScreen();
         } else {
             if (getPlayerTweaksData().isKeepFinishedActivityEnabled()) {
@@ -1527,9 +1538,15 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
         mPlaybackPresenter.onFinish();
     }
 
+    /**
+     * BACK closes the video, background mode or not. 'Listen' always counts as HOME only, whatever
+     * the older background playback shortcut setting says (its default is HOME + BACK): BACK in
+     * the app closes the video and stops the sound, only leaving the app keeps it playing.
+     */
     private boolean skipPip() {
         return isBackPressed()
-                && getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_HOME;
+                && (getGeneralData().getBackgroundPlaybackShortcut() == GeneralData.BACKGROUND_PLAYBACK_SHORTCUT_HOME
+                    || isBackgroundListening());
     }
 
     @TargetApi(24)

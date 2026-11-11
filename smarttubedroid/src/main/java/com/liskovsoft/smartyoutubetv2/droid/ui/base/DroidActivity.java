@@ -49,6 +49,11 @@ public abstract class DroidActivity extends MotherActivity {
      * home screen, where Android removes a task hidden from Recents. See {@link #updateRecentsEntries()}
      */
     private static boolean sIsMainTaskBehind;
+    /**
+     * The player's task sits in front of the home screen (behind the main task, the sound playing
+     * in the background), where it may be hidden from Recents. See {@link #updateRecentsEntries()}
+     */
+    private static boolean sIsPlayerTaskAboveHome;
 
     private boolean mInsetsHooked;
 
@@ -79,6 +84,7 @@ public abstract class DroidActivity extends MotherActivity {
         if (sStartedCount == 0 && !isChangingConfigurations()) {
             sIsAppLeft = true;
             sIsMainTaskBehind = false;
+            sIsPlayerTaskAboveHome = false;
         }
     }
 
@@ -115,13 +121,14 @@ public abstract class DroidActivity extends MotherActivity {
     }
 
     /**
-     * Brings the video back if it was the last screen open (the player has a task of its own).
+     * Brings the video back if it was the last screen open (the player has a task of its own), or
+     * whenever its sound plays in the background ('Listen'): the app opens on what's playing.
      * A PIP window stays a PIP window: the user is back for the other screens.
      */
     protected boolean reopenPlayer() {
         PlaybackPresenter playbackPresenter = PlaybackPresenter.instance(this);
 
-        if (getViewManager().getTopView() != PlaybackView.class
+        if ((getViewManager().getTopView() != PlaybackView.class && !isPlayingInBackground())
                 || playbackPresenter.getView() == null || playbackPresenter.isInPipMode()) {
             return false;
         }
@@ -145,6 +152,15 @@ public abstract class DroidActivity extends MotherActivity {
         updateRecentsEntries();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (getRecentsMode() == RECENTS_MAIN && !isChangingConfigurations()) {
+            showPlayerTaskInRecents();
+        }
+    }
+
     /**
      * How this screen's task shows in Recents, see {@link #updateRecentsEntries()}.
      */
@@ -158,16 +174,65 @@ public abstract class DroidActivity extends MotherActivity {
      * shows it again, as does the player once it leaves the screen ({@link #showMainTaskInRecents()}).
      * (The player's own task leaves Recents once it finishes: autoRemoveFromRecents.)<br/>
      * Only hidden while it's right behind the player: Android removes a task hidden from Recents
-     * once it's behind the home screen, as it is when the player is back from Recents, say.
+     * once it's behind the home screen, as it is when the player is back from Recents, say.<br/>
+     * The same the other way round while the sound plays in the background ('Listen'): the player
+     * task stays alive behind the main task, hidden while a screen of the main task is in front.
+     * Once the app is left, the player is the entry ({@link #showPlayerTaskInRecents()}).
      */
     private void updateRecentsEntries() {
         int mode = getRecentsMode();
 
         if (mode == RECENTS_MAIN) {
             sIsMainTaskBehind = true; // in front now: whatever opens next goes on top of it
+        } else if (mode == RECENTS_SOLE) {
+            sIsPlayerTaskAboveHome = true;
         }
 
-        if (mode == RECENTS_IGNORE || (mode == RECENTS_SOLE && !sIsMainTaskBehind)) {
+        if (mode == RECENTS_IGNORE) {
+            return;
+        }
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (manager == null) {
+            return;
+        }
+
+        // Behind the home screen (the app was left meanwhile, then opened on a screen of the main
+        // task) a hidden player's task would be removed, and the sound with it: both entries stay then
+        boolean hidePlayer = mode == RECENTS_MAIN && sIsPlayerTaskAboveHome && isPlayingInBackground();
+
+        try {
+            for (ActivityManager.AppTask task : manager.getAppTasks()) {
+                ActivityManager.RecentTaskInfo info = task.getTaskInfo();
+                boolean isOwnTask = getTaskId(info) == getTaskId();
+
+                if (isOwnTask) {
+                    // The player's task may have been hidden while the sound played behind the main task
+                    task.setExcludeFromRecents(false);
+                } else if (mode == RECENTS_SOLE && sIsMainTaskBehind) {
+                    task.setExcludeFromRecents(true);
+                } else if (hidePlayer && isPlayerTask(info)) {
+                    task.setExcludeFromRecents(true);
+                }
+            }
+        } catch (IllegalArgumentException | SecurityException e) {
+            // A task went away meanwhile
+        }
+    }
+
+    /**
+     * A screen of the main task leaves the screen, maybe for the home screen or another app, while
+     * the sound plays in the background: the player becomes the app's entry in Recents and the
+     * main task is hidden. Not the other way round: Android destroys a hidden task once it's behind
+     * the home screen, and the player's task destroyed would stop the sound. The main task can go:
+     * BACK from the video starts its screen anew then (see {@link #moveToParentTask()}).<br/>
+     * Also runs when a screen opens over this one (both entries are set again once a screen of the
+     * main task is back in front), and before the next screen resumes, so before Android looks at
+     * Recents for it.
+     */
+    private void showPlayerTaskInRecents() {
+        if (!isPlayingInBackground()) {
             return;
         }
 
@@ -179,17 +244,33 @@ public abstract class DroidActivity extends MotherActivity {
 
         try {
             for (ActivityManager.AppTask task : manager.getAppTasks()) {
-                boolean isOwnTask = getTaskId(task.getTaskInfo()) == getTaskId();
+                ActivityManager.RecentTaskInfo info = task.getTaskInfo();
 
-                if (mode == RECENTS_SOLE && !isOwnTask) {
-                    task.setExcludeFromRecents(true);
-                } else if (mode == RECENTS_MAIN && isOwnTask) {
+                if (isPlayerTask(info)) {
                     task.setExcludeFromRecents(false);
+                } else if (getTaskId(info) == getTaskId()) {
+                    task.setExcludeFromRecents(true);
                 }
             }
         } catch (IllegalArgumentException | SecurityException e) {
             // A task went away meanwhile
         }
+    }
+
+    /**
+     * The video keeps playing (sound only) with the player out of sight. A PIP window doesn't count:
+     * it isn't listed in Recents, the main task is the entry then.
+     */
+    private boolean isPlayingInBackground() {
+        PlaybackView view = PlaybackPresenter.instance(this).getView();
+
+        return view != null && view.isEngineBlocked() && !view.isInPIPMode();
+    }
+
+    private static boolean isPlayerTask(ActivityManager.RecentTaskInfo info) {
+        ComponentName base = VERSION.SDK_INT >= 23 ? info.baseActivity : null;
+
+        return base != null && PlaybackActivity.class.getName().equals(base.getClassName());
     }
 
     /**
@@ -264,7 +345,7 @@ public abstract class DroidActivity extends MotherActivity {
 
         // Right behind: leaving this task uncovers it, with the system's own back animation.
         // Bringing it to front instead plays the task switch (in from the right on One UI)
-        if (sIsMainTaskBehind) {
+        if (sIsMainTaskBehind && isFinishing()) {
             return true;
         }
 
@@ -273,6 +354,10 @@ public abstract class DroidActivity extends MotherActivity {
         } catch (IllegalArgumentException | SecurityException e) {
             return false;
         }
+
+        // The player stays (sound in the background) and the main task comes over it: a close
+        // still, the parent in from the left
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
         return true;
     }
