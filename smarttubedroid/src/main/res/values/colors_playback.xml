@@ -19,7 +19,17 @@
     <color name="playback_disc">#99141213</color>
     <!-- White disc behind play/pause and the icon on it -->
     <color name="playback_disc_primary">#F2FFFFFF</color>
-    <color name="playback_on_disc_primary">#FF141213</color>
+    <color name="playback_on_disc_primary">#FFFFFFFF</color>
+    <!-- Glass discs of the center transport (previous, play/pause, next). The video is a
+         SurfaceView, which can't be blurred from the UI, so the glass is drawn: a light dark tint
+         for legibility, a white sheen fading down, and a bright rim. Play/pause gets a bit more of each -->
+    <color name="playback_glass_tint">#26000000</color>
+    <color name="playback_glass_sheen_top">#33FFFFFF</color>
+    <color name="playback_glass_sheen_bottom">#0DFFFFFF</color>
+    <color name="playback_glass_rim">#4DFFFFFF</color>
+    <color name="playback_glass_primary_sheen_top">#4DFFFFFF</color>
+    <color name="playback_glass_primary_sheen_bottom">#1AFFFFFF</color>
+    <color name="playback_glass_primary_rim">#73FFFFFF</color>
     <!-- Unplayed part of the seek bar -->
     <color name="playback_seek_track">#4DFFFFFF</color>
     <!-- Buffered part of the seek bar -->

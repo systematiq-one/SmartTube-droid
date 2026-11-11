@@ -115,6 +115,8 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private static final String TAG = PlaybackActivity.class.getSimpleName();
     private static final long OVERLAY_AUTO_HIDE_MS = 3_000;
     private static final long PROGRESS_UPDATE_MS = 500;
+    /** "Next: ..." shows in the last minutes of the video only */
+    private static final long NEXT_TITLE_LEAD_MS = 3 * 60 * 1_000L;
     private static final int SEEK_BAR_MAX = 1_000;
     private static final float SPEED_BOOST = 2f;
     /** A full-width horizontal swipe scrubs this share of the video... */
@@ -1712,6 +1714,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         updatePlayButton();
         updateEndingTime();
+        updateNextTitleVisibility();
     }
 
     /**
@@ -2325,7 +2328,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         if (nextVideo == null || nextVideo.getTitle() == null) {
             mNextTitleLabel.setText(null);
-            mNextTitleLabel.setVisibility(View.GONE);
+            updateNextTitleVisibility();
             return;
         }
 
@@ -2334,7 +2337,32 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
                 : nextVideo.getTitle();
 
         mNextTitleLabel.setText(getString(R.string.playback_next_format, info));
-        mNextTitleLabel.setVisibility(View.VISIBLE);
+        updateNextTitleVisibility();
+    }
+
+    /**
+     * "Next: ..." only near the end, in the last {@link #NEXT_TITLE_LEAD_MS}, when it's about to
+     * play. Not on live streams (no end). Checked again with every progress update while the
+     * controls are shown.
+     */
+    private void updateNextTitleVisibility() {
+        if (mNextTitleLabel == null) {
+            return;
+        }
+
+        Video video = mPlaybackPresenter != null ? mPlaybackPresenter.getVideo() : null;
+
+        if (TextUtils.isEmpty(mNextTitleLabel.getText()) || video == null || video.isLive || mExoPlayerController == null) {
+            mNextTitleLabel.setVisibility(View.GONE);
+            return;
+        }
+
+        long durationMs = getTimelineDurationMs();
+        long remainingMs = durationMs - Math.max(getPositionMs() - getTimelineOffsetMs(), 0);
+
+        boolean show = durationMs > 0 && remainingMs <= NEXT_TITLE_LEAD_MS;
+
+        mNextTitleLabel.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override

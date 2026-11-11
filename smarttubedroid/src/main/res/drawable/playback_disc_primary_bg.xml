@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- White disc behind play/pause -->
+<!-- Glass disc behind play/pause, a bit brighter than previous/next: see playback_glass_* in colors_playback.xml -->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#33000000">
+    android:color="#33FFFFFF">
     <item>
-        <shape android:shape="oval">
-            <solid android:color="@color/playback_disc_primary" />
-        </shape>
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="@color/playback_glass_tint" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="oval">
+                    <gradient
+                        android:angle="270"
+                        android:endColor="@color/playback_glass_primary_sheen_bottom"
+                        android:startColor="@color/playback_glass_primary_sheen_top" />
+                    <stroke
+                        android:width="1.5dp"
+                        android:color="@color/playback_glass_primary_rim" />
+                </shape>
+            </item>
+        </layer-list>
     </item>
 </ripple>
