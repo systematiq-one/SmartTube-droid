@@ -69,6 +69,7 @@ import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.sharedutils.rx.RxHelper;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.VideoGroup;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.manager.PlayerConstants;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.ChatReceiver;
@@ -283,7 +284,31 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
 
         applyOrientation();
 
+        if (mPlaybackPresenter.getVideo() == null) {
+            restoreLastVideo();
+        }
+
         mPlaybackPresenter.onViewInitialized(); // init all controllers
+    }
+
+    /**
+     * The player was started by the system, not by the app: One UI relaunches the screen that was
+     * open once the app is updated, and Android recreates it after the app was killed in the
+     * background. A new process, so no video was opened: the player would stay blank (and crash on
+     * the first tap). Picks up the last video played, at the position it was left.
+     */
+    private void restoreLastVideo() {
+        VideoStateService.State state = VideoStateService.instance(this).getLastState();
+
+        if (state == null || state.video == null || state.video.videoId == null) {
+            return;
+        }
+
+        Log.d(TAG, "Started without a video: restoring the last one played");
+
+        Video video = Video.from(state.video.videoId);
+        video.pendingPosMs = state.positionMs;
+        mPlaybackPresenter.onNewVideo(video);
     }
 
     @Override
