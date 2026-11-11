@@ -1,0 +1,3 @@
+* Fixed: Google Play Protect could block the app as harmful. Removed permissions left over from the TV app (installing and removing apps, drawing over other apps, recording audio, starting at boot) that the phone app never used
+* The app no longer checks the TV app's update channel; updates come from GitHub releases as before (Obtainium)
+* Voice search and casting to the phone work as before
