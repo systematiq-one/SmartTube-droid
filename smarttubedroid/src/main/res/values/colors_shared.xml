@@ -12,8 +12,9 @@
     <color name="shared_on_surface_variant">#FF534341</color>
     <!-- Hairlines and unselected chip borders -->
     <color name="shared_outline">#FFD8C2BF</color>
-    <!-- Toggled-on pills and the selected section chip -->
-    <color name="shared_active_container">#FFFFDAD5</color>
+    <!-- Toggled-on pills and the selected section chip. A clear step up from the pills' own
+         fill (surface_container_high), still lighter than Subscribe's filled red -->
+    <color name="shared_active_container">#FFFF8A80</color>
     <color name="shared_on_active_container">#FF410002</color>
     <!-- The one filled red element on a screen (Subscribe) -->
     <color name="shared_primary">#FFC62828</color>

@@ -7,6 +7,6 @@
     <color name="shared_on_surface">#FFEFE0DE</color>
     <color name="shared_on_surface_variant">#FFD4C3C0</color>
     <color name="shared_outline">#FF4F4445</color>
-    <color name="shared_active_container">#FF5B1D17</color>
-    <color name="shared_on_active_container">#FFFFDAD5</color>
+    <color name="shared_active_container">#FF9C2B22</color>
+    <color name="shared_on_active_container">#FFFFFFFF</color>
 </resources>
