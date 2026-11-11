@@ -580,6 +580,13 @@ public final class Video {
         return isPlayingYouTubeMix() && playlistInfo.getPlaylistId().length() == MIX_PLAYLIST_PREFIX.length() + 11;
     }
 
+    /**
+     * Continuation button at the end of rows appeared on Home
+     */
+    public boolean isContinuation() {
+        return isChannel() && cardImageUrl == null && belongsToHome();
+    }
+
     public boolean isFullLive() {
         return isLive && startSegmentNum == 0;
     }

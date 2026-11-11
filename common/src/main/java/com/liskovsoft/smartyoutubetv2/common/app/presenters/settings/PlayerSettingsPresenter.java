@@ -59,7 +59,7 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
         appendPlaybackModeCategory(settingsPresenter);
         appendVideoPresetsCategory(settingsPresenter);
         appendPlayerButtonsCategory(settingsPresenter);
-        appendNetworkEngineCategory(settingsPresenter);
+        //appendNetworkEngineCategory(settingsPresenter);
         appendVideoBufferCategory(settingsPresenter);
         appendVideoZoomCategory(settingsPresenter);
         appendVideoSpeedCategory(settingsPresenter);
@@ -349,6 +349,10 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
     private void appendMiscCategory(AppDialogPresenter settingsPresenter) {
         List<OptionItem> options = new ArrayList<>();
 
+        options.add(UiOptionItem.from(getContext().getString(R.string.live_edge),
+                option -> mPlayerTweaksData.setLiveEdgeEnabled(option.isSelected()),
+                mPlayerTweaksData.isLiveEdgeEnabled()));
+
         options.add(UiOptionItem.from(getContext().getString(R.string.suggestions_horizontally_scrolled),
                 option -> mPlayerTweaksData.setSuggestionsHorizontallyScrolled(option.isSelected()),
                 mPlayerTweaksData.isSuggestionsHorizontallyScrolled()));
@@ -494,8 +498,8 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
 
         options.add(UiOptionItem.from(getContext().getString(R.string.prefer_sabr_live),
                 getContext().getString(R.string.prefer_sabr_live_desc),
-                option -> mPlayerTweaksData.setSabrLiveEnabled(option.isSelected()),
-                mPlayerTweaksData.isSabrLiveEnabled()));
+                option -> mMediaServiceData.setSabrLiveEnabled(option.isSelected()),
+                mMediaServiceData.isSabrLiveEnabled()));
 
         options.add(UiOptionItem.from(getContext().getString(R.string.playback_notifications_fix),
                 getContext().getString(R.string.playback_notifications_fix_desc),
