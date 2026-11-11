@@ -1,0 +1,7 @@
+* Listen: Back closes the video and stops the sound, only Home or switching apps keeps it playing; coming back to the app opens the playing video
+* Listen: SmartTube shows once in Recents while the sound plays in the background
+* Glass previous, play/pause and next buttons over the video; "Next" shows as a glass pill in the last 3 minutes only
+* Toggled buttons (Listen, Speed, Like) and the selected section stand out more, in light and dark mode
+* Tablets and TVs in landscape: bigger videos, fewer per row
+* Fixed: after an update the player could open empty and crash; it now picks up the last video
+* Updated to SmartTube 32.72: SABR playback error handling, "Keep up with live" option, more translations
