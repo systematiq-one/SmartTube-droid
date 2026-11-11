@@ -31,6 +31,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.SearchPresenter;
 import com.liskovsoft.smartyoutubetv2.common.app.views.SearchView;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 
 import java.util.List;
@@ -162,7 +163,7 @@ public class SearchActivity extends DroidActivity implements SearchView, VideoGr
         mResultsGrid = findViewById(R.id.search_results_grid);
         mProgressBar = findViewById(R.id.search_progress);
         mResultsAdapter = new VideoGroupAdapter(this); // grid card style
-        mResultsGrid.setLayoutManager(new GridLayoutManager(this, 2));
+        mResultsGrid.setLayoutManager(new GridLayoutManager(this, CardSizing.getGridColumns(this)));
         mResultsGrid.setAdapter(mResultsAdapter);
     }
 

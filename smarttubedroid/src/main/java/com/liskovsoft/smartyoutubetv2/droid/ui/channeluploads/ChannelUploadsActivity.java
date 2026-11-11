@@ -18,6 +18,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelUploadsPresen
 import com.liskovsoft.smartyoutubetv2.common.app.views.ChannelUploadsView;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 
 /**
@@ -27,7 +28,6 @@ import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
  * (including APPEND continuations of the same group instance) via the shared adapter.
  */
 public class ChannelUploadsActivity extends DroidActivity implements ChannelUploadsView, VideoGroupAdapter.Listener {
-    private static final int GRID_COLUMNS = 2;
     private ChannelUploadsPresenter mPresenter;
     private VideoGroupAdapter mGridAdapter;
     private RecyclerView mGridView;
@@ -58,7 +58,7 @@ public class ChannelUploadsActivity extends DroidActivity implements ChannelUplo
         mProgressBar = findViewById(R.id.channel_uploads_progress);
 
         mGridView = findViewById(R.id.channel_uploads_grid);
-        mGridView.setLayoutManager(new GridLayoutManager(this, GRID_COLUMNS));
+        mGridView.setLayoutManager(new GridLayoutManager(this, CardSizing.getGridColumns(this)));
         mGridAdapter = new VideoGroupAdapter(this); // grid card style
         mGridView.setAdapter(mGridAdapter);
 

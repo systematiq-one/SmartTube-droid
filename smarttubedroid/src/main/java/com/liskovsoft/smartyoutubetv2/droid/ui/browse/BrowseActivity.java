@@ -26,6 +26,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.presenters.settings.AccountSett
 import com.liskovsoft.smartyoutubetv2.common.app.views.BrowseView;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoRowsAdapter;
 
@@ -41,7 +42,6 @@ import java.util.List;
  */
 public class BrowseActivity extends DroidActivity implements BrowseView {
     private static final String TAG = BrowseActivity.class.getSimpleName();
-    private static final int GRID_COLUMNS = 2;
 
     private BrowsePresenter mBrowsePresenter;
     /** Mirrors the tab order. Index in this list == tab position. */
@@ -199,7 +199,7 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
         mProgressBar = findViewById(R.id.browse_progress);
 
         mGridAdapter = new VideoGroupAdapter(mCardListener);
-        mGridView.setLayoutManager(new GridLayoutManager(this, GRID_COLUMNS));
+        mGridView.setLayoutManager(new GridLayoutManager(this, CardSizing.getGridColumns(this)));
         mGridView.setAdapter(mGridAdapter);
 
         mRowsAdapter = new VideoRowsAdapter(mCardListener);

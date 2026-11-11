@@ -43,6 +43,12 @@ public class VideoCardHolder extends RecyclerView.ViewHolder {
     public static VideoCardHolder create(ViewGroup parent, boolean isRow) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(isRow ? R.layout.shared_video_card_row : R.layout.shared_video_card, parent, false);
+
+        if (isRow) {
+            // Bigger on big landscape screens, see CardSizing
+            view.getLayoutParams().width = CardSizing.getRowCardWidthPx(parent.getContext());
+        }
+
         return new VideoCardHolder(view);
     }
 

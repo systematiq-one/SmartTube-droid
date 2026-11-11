@@ -99,6 +99,8 @@ dependencies {
     implementation project(':mediaserviceinterfaces')
     implementation project(':youtubeapi')
 
+    testImplementation 'junit:junit:' + junitVersion
+
     // Stock androidx.fragment is excluded globally in the root build.gradle;
     // this patched local copy MUST be present or fragments vanish at runtime
     implementation project(':fragment-1.1.0')
