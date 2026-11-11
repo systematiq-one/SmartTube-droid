@@ -51,6 +51,13 @@ public class AppUpdatePresenter extends BasePresenter<Void> implements AppUpdate
     public void start(boolean forceCheck) {
         mIsForceCheck = forceCheck;
 
+        // No update channel (SmartTube Droid updates through GitHub releases): nothing to check, and
+        // the checker would never answer, leaving the loading indicator of a manual check on screen
+        if (mUpdateManifestUrls == null || mUpdateManifestUrls.length == 0) {
+            onUpdateError(new IllegalStateException(AppUpdateCheckerListener.LATEST_VERSION));
+            return;
+        }
+
         if (forceCheck) {
             LoadingManager.showLoading(getContext(), true);
             mUpdateChecker.forceCheckForUpdates(mUpdateManifestUrls);

@@ -17,12 +17,27 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- DIAL discovery (SSDP multicast): show up in the cast list of YouTube apps -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- Play with screen off: media playback foreground service, CPU and Wi-Fi kept awake -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- TV-only permissions merged in from :common, :leanbackassistant and :appupdatechecker2.
+         A phone app holding them looks like malware to Google Play Protect (installing and
+         removing apps, drawing over other apps, starting at boot), which blocked 0.9.2 on some
+         phones. None is used here: updates come from GitHub releases (Obtainium), voice search
+         goes through the system speech dialog (it records, not this app), no overlay window,
+         no TV home-screen channels, nothing to start at boot. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
+    <uses-permission android:name="android.permission.QUICKBOOT_POWERON" tools:node="remove" />
+    <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" tools:node="remove" />
+    <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" tools:node="remove" />
 
     <!-- tools:node="replace" is required: library manifests pulled in via :common declare
          leanback as required=true, and the merger resolves conflicts in favour of true,
@@ -193,6 +208,12 @@
         <provider
             android:name="com.liskovsoft.leanbackassistant.search.VideoContentProvider"
             android:authorities="${applicationId}.leanbackassistant"
+            tools:node="remove" />
+        <!-- :common's exported receiver starting the TV remote control service at boot, screen
+             on and clock changes. On a phone that service starts with the app (it's only for
+             being a cast target while SmartTube is in use) -->
+        <receiver
+            android:name="com.liskovsoft.smartyoutubetv2.common.misc.RemoteControlReceiver"
             tools:node="remove" />
         <service
             android:name="com.liskovsoft.smartyoutubetv2.droid.ui.playback.ScreenOffPlaybackService"
