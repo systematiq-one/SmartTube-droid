@@ -23,8 +23,8 @@ import com.liskovsoft.smartyoutubetv2.droid.R;
  * which is what this draws, without any 3D.
  */
 public class AtomSpinnerView extends View {
-    /** One full turn of each ring, as the web default (1000ms, linear) */
-    private static final long TURN_MS = 1000;
+    /** One full turn of each ring (linear); a little calmer than the web default of 1000ms */
+    private static final long TURN_MS = 1500;
     private static final int RINGS = 3;
     /** Stroke widths relative to the spinner size, as in the web CSS */
     private static final float SHELL_STROKE = 0.055f;

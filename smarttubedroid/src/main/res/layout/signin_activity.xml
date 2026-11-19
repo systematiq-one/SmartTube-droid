@@ -39,12 +39,11 @@
                     android:text="@string/signin_view_title" />
 
                 <!-- Back from the browser: the sign-in may land any second -->
-                <ProgressBar
+                <com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView
                     android:id="@+id/signin_progress"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginTop="12dp"
-                    android:indeterminateTint="@color/shared_primary"
                     android:visibility="gone" />
 
                 <!-- Shown once there is a code -->

@@ -30,7 +30,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -205,7 +204,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private TextView mDetailsDescription;
     private RecyclerView mDetailsComments;
     private TextView mDetailsMessage;
-    private ProgressBar mDetailsProgress;
+    private AtomSpinnerView mDetailsProgress;
     private CommentsAdapter mCommentsAdapter;
     private View mBackgroundButton;
 

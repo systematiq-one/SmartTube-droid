@@ -15,7 +15,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -30,6 +29,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.views.SignInView;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 
 /**
@@ -56,7 +56,7 @@ public class SignInActivity extends DroidActivity implements SignInView {
     private TextView mWaitingText;
     private MaterialButton mOpenBrowserButton;
     private MaterialButton mCopyButton;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     private String mUserCode;
     private String mFullSignInUrl;
     private boolean mIsError;

@@ -105,12 +105,11 @@
             android:padding="4dp"
             android:scrollbars="vertical" />
 
-        <ProgressBar
+        <com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView
             android:id="@+id/search_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="center"
-            android:indeterminate="true"
             android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

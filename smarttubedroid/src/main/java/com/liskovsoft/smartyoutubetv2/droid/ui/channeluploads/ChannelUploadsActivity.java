@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 
 /**
  * Flat grid of a single channel's uploads or a playlist's content.<br/>
@@ -31,7 +31,7 @@ public class ChannelUploadsActivity extends DroidActivity implements ChannelUplo
     private ChannelUploadsPresenter mPresenter;
     private VideoGroupAdapter mGridAdapter;
     private RecyclerView mGridView;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     private TextView mTitleView;
     private boolean mIsActivityCreated;
 

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -27,6 +26,7 @@ import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoRowsAdapter;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 
 /**
  * Channel screen: vertical list of titled rows (Uploads, Playlists, Live now...).<br/>
@@ -39,7 +39,7 @@ public class ChannelActivity extends DroidActivity implements ChannelView, Video
     private VideoRowsAdapter mRowsAdapter;
     private RecyclerView mRowsList;
     private LinearLayoutManager mLayoutManager;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     private TextView mTitleView;
     private boolean mIsActivityCreated;
 

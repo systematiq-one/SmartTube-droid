@@ -5,10 +5,9 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
-    <ProgressBar
+    <com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView
         android:id="@+id/playback_comment_loading"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:layout_gravity="center" />
 </FrameLayout>

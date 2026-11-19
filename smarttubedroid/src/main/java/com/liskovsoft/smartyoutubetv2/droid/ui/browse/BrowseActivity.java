@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -29,6 +28,7 @@ import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoRowsAdapter;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
     private View mErrorContainer;
     private MaterialTextView mErrorMessage;
     private MaterialButton mErrorAction;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     private VideoGroupAdapter mGridAdapter;
     private VideoRowsAdapter mRowsAdapter;
     private BrowseSettingsAdapter mSettingsAdapter;

@@ -14,7 +14,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -33,6 +32,7 @@ import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class SearchActivity extends DroidActivity implements SearchView, VideoGr
     private ImageButton mClearButton;
     private RecyclerView mTagsList;
     private RecyclerView mResultsGrid;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     private VideoGroupAdapter mResultsAdapter;
     private SearchTagAdapter mTagAdapter;
     private MediaServiceSearchTagProvider mTagsProvider;

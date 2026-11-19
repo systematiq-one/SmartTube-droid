@@ -497,12 +497,11 @@
                 android:textSize="14sp"
                 android:visibility="gone" />
 
-            <ProgressBar
+            <com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView
                 android:id="@+id/playback_details_progress"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
-                android:indeterminate="true"
                 android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
