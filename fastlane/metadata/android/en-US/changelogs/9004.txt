@@ -1,0 +1,3 @@
+* New loading animation: a red atom replaces the spinning line everywhere (video loading, Home, search, channels, comments, sign-in)
+* Search results, Subscriptions and channel videos have space between the cards instead of touching
+* Updated to SmartTube 32.80: videos that won't play now try other YouTube clients automatically, fewer playback errors, age-restricted videos follow child mode, fixed backups that kept running after being turned off, fixed crashes with a proxy, fixed "Link with TV" pairing, more translations
