@@ -61,12 +61,12 @@
 
         <include layout="@layout/playback_overlay" />
 
-        <ProgressBar
+        <!-- Buffering spinner: red atom (AtomSpinnerView) -->
+        <com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView
             android:id="@+id/playback_progress"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:indeterminate="true"
             android:visibility="gone" />
 
         <!-- Volume / brightness / speed-boost indicator -->

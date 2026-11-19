@@ -86,6 +86,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.droid.R;
 import com.liskovsoft.smartyoutubetv2.droid.ui.base.DroidActivity;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoRowsAdapter;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
@@ -165,7 +166,7 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
     private SubtitleView mSubtitleView;
     private YouTubeOverlay mYouTubeOverlay;
     private ImageView mBackgroundView;
-    private ProgressBar mProgressBar;
+    private AtomSpinnerView mProgressBar;
     /** A hide arrived while the player was buffering; applied once buffering ends. */
     private boolean mProgressHidePending;
     private View mOverlay;
