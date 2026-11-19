@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Grid video card: full-width 16:9 thumbnail, badges overlay, watch progress, two text lines.
-     Root is a FrameLayout so the touch ripple (foreground) works on all supported API levels. -->
+     Root is a FrameLayout so the touch ripple (foreground) works on all supported API levels.
+     The 4dp margin, with the grids' 4dp padding, keeps 8dp between cards and at the screen edges. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="4dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
