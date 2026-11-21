@@ -1,4 +1,4 @@
-# SmartTube Droid — touch UI module design contract
+# SanTube — touch UI module design contract
 
 Phone (touch-first) UI for SmartTube. This module implements the view interfaces defined in
 `common` with Material touch screens; ALL business logic (ad-free data, SponsorBlock, accounts,

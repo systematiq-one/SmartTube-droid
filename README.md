@@ -1,6 +1,6 @@
-<img src="logo-S.png" width="120" alt="SmartTube Droid logo">
+<img src="logo-S.png" width="120" alt="SanTube logo">
 
-# SmartTube Droid
+# SanTube
 
 **Watch videos on your Android phone with no ads.** Free and open source.
 

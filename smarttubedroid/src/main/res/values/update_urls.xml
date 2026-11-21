@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Overrides :common's ststable flavor, which points at upstream's update manifest
-         (yuliskov/SmartTubeNext, the TV app). SmartTube Droid updates through GitHub releases
+         (yuliskov/SmartTubeNext, the TV app). SanTube updates through GitHub releases
          (Obtainium), so its in-app update check never looks anywhere and never downloads or
          installs an APK. -->
     <string-array name="update_urls" />

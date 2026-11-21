@@ -72,7 +72,7 @@ fabric.properties
 *BAK.java
 hs_err_pid*.log
 
-# SmartTube Droid: archived TV-only code kept for reference, never tracked
+# SanTube: archived TV-only code kept for reference, never tracked
 /backup/
 
 # Signing secrets. The keystore itself lives outside the repo; these patterns are
