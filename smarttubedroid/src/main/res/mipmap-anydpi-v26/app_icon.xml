@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Launcher icon on Android 8+: the 3D logo (logo-3d.png) over a dark tonal backdrop.
-     The foreground keeps the logo within ~60dp of the 108dp layer so launcher masks don't cut it.
+<!-- Launcher icon on Android 8+: the red S logo (logo-S.png) over a dark tonal backdrop.
+     The foreground keeps the logo within a 30dp radius of the 108dp layer so launcher masks don't cut it.
      Older versions use the flat app_icon.png tiles. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/app_icon_background" />
