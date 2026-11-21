@@ -1,0 +1,2 @@
+* SmartTube Droid is now SanTube. It updates over the old app as usual: your sign-in, settings and history stay
+* New app icon and logo: a red S
