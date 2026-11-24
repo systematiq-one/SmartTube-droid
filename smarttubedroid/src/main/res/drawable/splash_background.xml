@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Launch window before Android 12 (later ones route through a translucent splash, see
+     values-v31/themes.xml): the page colour only. The S comes with the intro (IntroView) -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/black" />
-    <item android:gravity="center">
-        <bitmap
-            android:src="@mipmap/app_logo"
-            android:gravity="center" />
-    </item>
+    <item android:drawable="@color/shared_surface" />
 </layer-list>

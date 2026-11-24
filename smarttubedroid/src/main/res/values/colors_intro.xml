@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The start intro's light (IntroView): the logo red, drawn at 30% -->
+    <color name="intro_glow">#FFFF0033</color>
+</resources>

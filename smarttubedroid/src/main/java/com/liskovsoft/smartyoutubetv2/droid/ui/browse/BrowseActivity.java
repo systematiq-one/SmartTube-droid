@@ -29,6 +29,7 @@ import com.liskovsoft.smartyoutubetv2.droid.ui.shared.CardSizing;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoGroupAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.VideoRowsAdapter;
 import com.liskovsoft.smartyoutubetv2.droid.ui.shared.AtomSpinnerView;
+import com.liskovsoft.smartyoutubetv2.droid.ui.shared.IntroView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,8 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
     private boolean mSuppressTabEvents;
     /** Skip the onViewResumed() that immediately follows onCreate (mirrors TV's BrowseFragment). */
     private boolean mJustCreated;
+    /** The start intro (the S over the red light) while the first section loads: fresh starts only */
+    private IntroView mIntro;
 
     private final VideoGroupAdapter.Listener mCardListener = new VideoGroupAdapter.Listener() {
         @Override
@@ -94,6 +97,12 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
         initToolbar();
         initTabs();
         initContent();
+
+        // A fresh start always loads (and showed the spinner on an empty page): the intro instead.
+        // Not when the screen is only recreated (rotation, theme), its content comes back at once
+        if (savedInstanceState == null) {
+            mIntro = IntroView.show(this);
+        }
 
         mJustCreated = true;
 
@@ -392,6 +401,11 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
             // tapping a channel card opens it (BrowsePresenter handles that path itself).
             mGridAdapter.update(group);
         }
+
+        // The first update can be empty (the spinner then keeps going): the intro waits for cards
+        if (!isEmpty()) {
+            hideIntro();
+        }
     }
 
     @Override
@@ -402,6 +416,7 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
 
         showContentForType(BrowseSection.TYPE_SETTINGS_GRID);
         mSettingsAdapter.setItems(group.getItems());
+        hideIntro();
     }
 
     @Override
@@ -440,6 +455,7 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
         }
 
         showContentView(mErrorContainer);
+        hideIntro();
 
         mErrorMessage.setText(data.getMessage());
 
@@ -500,6 +516,13 @@ public class BrowseActivity extends DroidActivity implements BrowseView {
     }
 
     // -------------------------------------------------------------- helpers
+
+    private void hideIntro() {
+        if (mIntro != null) {
+            mIntro.dismiss();
+            mIntro = null;
+        }
+    }
 
     /** Show the content view matching a section type, hiding all the others. */
     private void showContentForType(int sectionType) {
