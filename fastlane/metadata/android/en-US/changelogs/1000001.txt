@@ -1,0 +1,2 @@
+* New start intro: the red S fades in over a soft red light while Home loads, instead of the spinner on an empty page
+* App icon: the S has the same size and tile as SanTube for TV (slightly smaller on the home screen)
