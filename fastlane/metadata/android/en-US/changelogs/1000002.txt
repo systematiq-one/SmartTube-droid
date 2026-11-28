@@ -1,0 +1,1 @@
+* One SanTube window in Recents again: leaving a video with Home no longer adds a second window for the screen behind it
