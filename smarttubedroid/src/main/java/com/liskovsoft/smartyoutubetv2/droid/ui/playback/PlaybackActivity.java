@@ -362,10 +362,12 @@ public class PlaybackActivity extends DroidActivity implements PlaybackView,
             maybeReleasePlayer();
         }
 
-        // Left with HOME or for another app: the screen under the video must outlive it.
-        // Not while the sound plays on ('Listen'): the player is the app's single Recents entry
-        // then, and BACK from the video starts that screen anew should Android have removed it.
-        if (!isFinishing() && (!isEngineBlocked() || isInPIPMode())) {
+        // Left with HOME or for another app, paused or with the sound on ('Listen'): the player
+        // stays the app's single Recents entry, the main task behind it stays hidden. Should
+        // Android remove that hidden task, BACK from the video starts its screen anew
+        // (DroidActivity.moveToParentTask). A PIP window isn't listed in Recents, so the main
+        // task is the entry then.
+        if (!isFinishing() && isInPIPMode()) {
             showMainTaskInRecents();
         }
     }

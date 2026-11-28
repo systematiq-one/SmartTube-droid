@@ -171,7 +171,8 @@ public abstract class DroidActivity extends MotherActivity {
     /**
      * One app, one Recents entry. The player runs in a task of its own (see the manifest), so while
      * it's in front the main task behind it is hidden from Recents, and any screen of the main task
-     * shows it again, as does the player once it leaves the screen ({@link #showMainTaskInRecents()}).
+     * shows it again, as does the player once it closes or turns into a PIP window
+     * ({@link #showMainTaskInRecents()}). Left with HOME, the player stays the single entry.
      * (The player's own task leaves Recents once it finishes: autoRemoveFromRecents.)<br/>
      * Only hidden while it's right behind the player: Android removes a task hidden from Recents
      * once it's behind the home screen, as it is when the player is back from Recents, say.<br/>
